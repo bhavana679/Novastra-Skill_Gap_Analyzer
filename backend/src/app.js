@@ -1,17 +1,18 @@
 import express from 'express';
 import cors from 'cors';
 
+import resumeRoutes from './routes/resume.routes.js';
+
 const app = express();
 
-// Enable CORS (Cross-Origin Resource Sharing)
-// This allows your frontend to talk to this backend
 app.use(cors());
 
-// Enable JSON parsing
-// This allows the app to understand incoming JSON data
 app.use(express.json());
 
-// Basic health check route
+// Routes
+app.use('/api/resume', resumeRoutes);
+
+
 app.get('/', (req, res) => {
     res.send('Hello! The server is running perfectly.');
 });

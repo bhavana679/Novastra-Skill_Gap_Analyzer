@@ -1,5 +1,8 @@
-import pdfParse from 'pdf-parse/lib/pdf-parse.js';
+import { createRequire } from 'module';
 import Tesseract from 'tesseract.js';
+
+const require = createRequire(import.meta.url);
+const pdfParse = require('pdf-parse');
 
 const normalizeText = (text) => {
     return text.replace(/\s+/g, ' ').trim();
