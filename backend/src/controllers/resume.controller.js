@@ -25,7 +25,7 @@ const uploadResume = async (req, res) => {
         console.error('Upload Controller Error:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to process resume. Please try again.',
+            error: error.message || 'Failed to process resume.',
         });
     }
 };

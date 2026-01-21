@@ -1,9 +1,5 @@
-import { createRequire } from 'module';
 import Tesseract from 'tesseract.js';
-
-// Use createRequire for pdf-parse compatibility with ES Modules
-const require = createRequire(import.meta.url);
-const pdfParse = require('pdf-parse');
+import { PDFParse } from 'pdf-parse';
 
 const normalizeText = (text) => {
     if (!text) return '';
@@ -15,9 +11,11 @@ const extractText = async (fileBuffer, mimetype) => {
         let extractedText = '';
 
         if (mimetype === 'application/pdf') {
-            // Attempt to extract text from PDF using pdf-parse
-            const data = await pdfParse(fileBuffer);
+            // Attempt to extract text from PDF using pdf-parse v2.x
+            const parser = new PDFParse({ data: fileBuffer });
+            const data = await parser.getText();
             extractedText = data.text;
+            await parser.destroy();
 
             // Fallback to OCR if text extraction yields minimal results (scanned PDF)
             if (!extractedText || extractedText.trim().length < 20) {
@@ -39,7 +37,7 @@ const extractText = async (fileBuffer, mimetype) => {
 
     } catch (error) {
         console.error('OCR Service Error:', error);
-        throw new Error('Could not process the file.');
+        throw new Error(error.message || 'Could not process the file.');
     }
 };
 
