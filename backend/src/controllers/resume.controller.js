@@ -1,5 +1,6 @@
 import Resume from '../models/Resume.js';
 import extractText from '../ocr/ocr.service.js';
+import { cleanText } from '../services/textCleaner.service.js';
 
 const uploadResume = async (req, res) => {
     try {
@@ -10,18 +11,23 @@ const uploadResume = async (req, res) => {
             });
         }
 
-        const extractedText = await extractText(req.file.buffer, req.file.mimetype);
+        // Extract raw text using OCR
+        const rawText = await extractText(req.file.buffer, req.file.mimetype);
 
+        // Clean and normalize the extracted text
+        const cleanedText = cleanText(rawText);
+
+        // Save the cleaned text to MongoDB
         const savedResume = await Resume.create({
             fileName: req.file.originalname,
-            ocrText: extractedText,
+            ocrText: cleanedText,
             createdAt: new Date()
         });
 
         return res.status(200).json({
             success: true,
             resumeId: savedResume._id,
-            text: extractedText
+            text: cleanedText
         });
 
     } catch (error) {
