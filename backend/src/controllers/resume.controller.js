@@ -4,28 +4,30 @@ import extractText from '../ocr/ocr.service.js';
 const uploadResume = async (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).json({ success: false, error: 'No file uploaded' });
+            return res.status(400).json({
+                success: false,
+                message: 'No file uploaded'
+            });
         }
 
-        const text = await extractText(req.file.buffer, req.file.mimetype);
+        const extractedText = await extractText(req.file.buffer, req.file.mimetype);
 
-        const newResume = new Resume({
+        const savedResume = await Resume.create({
             fileName: req.file.originalname,
-            ocrText: text,
+            ocrText: extractedText,
+            createdAt: new Date()
         });
 
-        await newResume.save();
-
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
-            text: text,
+            resumeId: savedResume._id,
+            text: extractedText
         });
 
     } catch (error) {
-        console.error('Upload Controller Error:', error);
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
-            error: error.message || 'Failed to process resume.',
+            message: error.message || 'Error processing the resume file'
         });
     }
 };
