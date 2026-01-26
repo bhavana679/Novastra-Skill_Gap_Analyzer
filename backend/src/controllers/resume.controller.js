@@ -1,6 +1,7 @@
 import Resume from '../models/Resume.js';
 import extractText from '../ocr/ocr.service.js';
 import { cleanText } from '../services/textCleaner.service.js';
+import { extractSkills } from '../services/skillExtractor.service.js';
 
 const uploadResume = async (req, res) => {
     try {
@@ -11,23 +12,30 @@ const uploadResume = async (req, res) => {
             });
         }
 
-        // Extract raw text using OCR
         const rawText = await extractText(req.file.buffer, req.file.mimetype);
 
-        // Clean and normalize the extracted text
         const cleanedText = cleanText(rawText);
 
-        // Save the cleaned text to MongoDB
+        const { skills, education, experienceLevel } = extractSkills(cleanedText);
+
         const savedResume = await Resume.create({
             fileName: req.file.originalname,
             ocrText: cleanedText,
+            skills,
+            education,
+            experienceLevel,
             createdAt: new Date()
         });
 
         return res.status(200).json({
             success: true,
             resumeId: savedResume._id,
-            text: cleanedText
+            text: cleanedText,
+            extractedData: {
+                skills,
+                education,
+                experienceLevel
+            }
         });
 
     } catch (error) {

@@ -7,7 +7,19 @@ const resumeSchema = new mongoose.Schema({
     },
     ocrText: {
         type: String,
-        required: true, 
+        required: true,
+    },
+    skills: {
+        type: [String],
+        default: []
+    },
+    education: {
+        type: [String],
+        default: []
+    },
+    experienceLevel: {
+        type: String,
+        default: 'Unknown'
     },
     createdAt: {
         type: Date,
