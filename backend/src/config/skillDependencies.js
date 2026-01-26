@@ -1,8 +1,3 @@
-/**
- * Configuration for skill dependencies by career role.
- * This defines the learning order and difficulty level for each skill
- * required to achieve a specific target role.
- */
 const SKILL_DEPENDENCIES = {
     "Frontend Developer": [
         { skill: "HTML", level: "Beginner" },
