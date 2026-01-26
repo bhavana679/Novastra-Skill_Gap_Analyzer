@@ -21,6 +21,10 @@ const resumeSchema = new mongoose.Schema({
         type: String,
         default: 'Unknown'
     },
+    targetRole: {
+        type: String,
+        default: ''
+    },
     createdAt: {
         type: Date,
         default: Date.now,
