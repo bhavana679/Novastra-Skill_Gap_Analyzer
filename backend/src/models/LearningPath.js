@@ -24,6 +24,15 @@ const learningPathSchema = new mongoose.Schema({
             order: {
                 type: Number,
                 required: true
+            },
+            status: {
+                type: String,
+                enum: ['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED'],
+                default: 'NOT_STARTED'
+            },
+            updatedAt: {
+                type: Date,
+                default: null
             }
         }
     ],
