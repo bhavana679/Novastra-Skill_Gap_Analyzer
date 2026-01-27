@@ -18,18 +18,42 @@ const uploadResume = async (req, res) => {
 
         const { skills, education, experienceLevel } = extractSkills(cleanedText);
 
+        const profileId = req.body.profileId || req.query.profileId;
+
+        let version = 1;
+
+        if (profileId) {
+            const latestResume = await Resume.findOne({ profileId })
+                .sort({ version: -1 })
+                .select('version');
+
+            if (latestResume) {
+                version = latestResume.version + 1;
+
+                await Resume.updateMany(
+                    { profileId, isActive: true },
+                    { $set: { isActive: false } }
+                );
+            }
+        }
+
         const savedResume = await Resume.create({
             fileName: req.file.originalname,
             ocrText: cleanedText,
             skills,
             education,
             experienceLevel,
+            profileId: profileId || undefined,
+            version,
+            isActive: true,
             createdAt: new Date()
         });
 
         return res.status(200).json({
             success: true,
             resumeId: savedResume._id,
+            version: savedResume.version,
+            isActive: savedResume.isActive,
             text: cleanedText,
             extractedData: {
                 skills,
