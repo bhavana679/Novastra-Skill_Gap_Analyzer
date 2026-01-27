@@ -25,6 +25,19 @@ const resumeSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    profileId: {
+        type: String,
+        required: false,
+        index: true
+    },
+    version: {
+        type: Number,
+        default: 1
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
     createdAt: {
         type: Date,
         default: Date.now,
