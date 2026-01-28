@@ -21,6 +21,10 @@ app.use('/api/learning-path', learningPathRoutes);
 app.use('/api/learning-path', aiLearningPathRoutes);
 app.use('/api/resources', resourceRoutes);
 
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', message: 'Backend is connected!' });
+});
+
 app.get('/', (req, res) => {
     res.send('Hello! The server is running perfectly.');
 });
