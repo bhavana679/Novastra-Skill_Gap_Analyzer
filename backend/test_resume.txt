@@ -1,0 +1,16 @@
+JOHN DOE
+Software Engineer
+
+EXPERIENCE:
+- Senior Developer at Tech Corp (2020-2023)
+- Junior Developer at StartupXYZ (2018-2020)
+
+SKILLS:
+JavaScript, Python, Node.js, React, MongoDB, Express
+
+EDUCATION:
+B.S. Computer Science, University of Technology (2014-2018)
+
+CONTACT:
+Email: john.doe@example.com
+Phone: (555) 123-4567

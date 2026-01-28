@@ -30,7 +30,11 @@ const getResumeById = async (req, res) => {
             resume: {
                 fileName: resume.fileName,
                 ocrText: resume.ocrText,
-                createdAt: resume.createdAt
+                createdAt: resume.createdAt,
+                experienceLevel: resume.experienceLevel,
+                targetRole: resume.targetRole,
+                version: resume.version,
+                isActive: resume.isActive
             }
         });
 
