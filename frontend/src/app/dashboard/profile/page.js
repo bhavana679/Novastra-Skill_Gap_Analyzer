@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
     ResponsiveContainer,
     BarChart,
@@ -15,6 +16,7 @@ import {
 import { Zap, Trophy, TrendingUp, Target, ChevronRight, BarChart3, Clock, FileText, Briefcase } from "lucide-react";
 
 export default function ProfileDashboard() {
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [resumeData, setResumeData] = useState(null);
@@ -143,7 +145,7 @@ export default function ProfileDashboard() {
                                     <div className="flex justify-between items-center mb-2">
                                         <span className="text-textPrimary font-semibold">{step.skill}</span>
                                         <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase ${step.status === 'COMPLETED' ? 'bg-green-400/10 text-green-400' :
-                                                step.status === 'IN_PROGRESS' ? 'bg-primary/10 text-primary' : 'bg-border text-textMuted'
+                                            step.status === 'IN_PROGRESS' ? 'bg-primary/10 text-primary' : 'bg-border text-textMuted'
                                             }`}>
                                             {step.status.replace('_', ' ')}
                                         </span>
@@ -151,7 +153,7 @@ export default function ProfileDashboard() {
                                     <div className="h-2 w-full bg-background rounded-full overflow-hidden border border-border/50">
                                         <div
                                             className={`h-full transition-all duration-1000 ${step.status === 'COMPLETED' ? 'bg-green-400' :
-                                                    step.status === 'IN_PROGRESS' ? 'bg-primary animate-pulse' : 'bg-border'
+                                                step.status === 'IN_PROGRESS' ? 'bg-primary animate-pulse' : 'bg-border'
                                                 }`}
                                             style={{ width: step.status === 'COMPLETED' ? '100%' : step.status === 'IN_PROGRESS' ? '50%' : '5%' }}
                                         ></div>
@@ -227,7 +229,10 @@ export default function ProfileDashboard() {
                         <p className="text-textMuted text-sm">Last updated {resumeData ? new Date(resumeData.createdAt).toLocaleDateString() : "N/A"}</p>
                     </div>
                 </div>
-                <button className="px-8 py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/25 hover:bg-primarySoft transition-all active:scale-95">
+                <button
+                    onClick={() => router.push("/upload")}
+                    className="px-8 py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/25 hover:bg-primarySoft transition-all active:scale-95"
+                >
                     Replace Resume
                 </button>
             </section>
