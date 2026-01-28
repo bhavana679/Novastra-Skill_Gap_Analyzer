@@ -29,7 +29,12 @@ import {
     BookOpen,
     Youtube,
     Globe,
-    Library
+    Library,
+    Flame,
+    Medal,
+    GraduationCap,
+    TrendingUp,
+    Target
 } from "lucide-react";
 
 export default function LearningPathPage() {
@@ -37,13 +42,34 @@ export default function LearningPathPage() {
     const [refining, setRefining] = useState(false);
     const [pathData, setPathData] = useState(null);
     const [error, setError] = useState("");
+    const [streak, setStreak] = useState(7);
 
     const platforms = [
         { name: "Coursera", icon: Globe, url: "https://www.coursera.org", color: "text-blue-500", bg: "bg-blue-500/10" },
-        { name: "Udemy", icon: PlayCircle, url: "https://www.udemy.com", color: "text-purple-500", bg: "bg-purple-500/10" },
+        { name: "Udemy", icon: Youtube, url: "https://www.udemy.com", color: "text-purple-500", bg: "bg-purple-500/10" },
         { name: "YouTube", icon: Youtube, url: "https://www.youtube.com", color: "text-red-500", bg: "bg-red-500/10" },
         { name: "MDN Docs", icon: BookOpen, url: "https://developer.mozilla.org", color: "text-yellow-500", bg: "bg-yellow-500/10" },
         { name: "LinkedIn", icon: Library, url: "https://www.linkedin.com/learning", color: "text-blue-600", bg: "bg-blue-600/10" },
+    ];
+
+    const activityData = [
+        { day: "Mon", effort: 45 },
+        { day: "Tue", effort: 80 },
+        { day: "Wed", effort: 65 },
+        { day: "Thu", effort: 90 },
+        { day: "Fri", effort: 40 },
+        { day: "Sat", effort: 120 },
+        { day: "Sun", effort: 100 },
+    ];
+
+    const certifications = [
+        { title: "Meta Front-End Developer", issuer: "Coursera", date: "Jan 2026", icon: "🛡️" },
+        { title: "AWS Cloud Practitioner", issuer: "Amazon", date: "Dec 2025", icon: "☁️" },
+    ];
+
+    const completedCourses = [
+        { title: "React Design Patterns", platform: "Frontend Masters", duration: "12 hours" },
+        { title: "Modern Next.js Architecture", platform: "Novastra", duration: "8 hours" },
     ];
 
     const fetchData = async () => {
@@ -99,7 +125,7 @@ export default function LearningPathPage() {
                 fetchData();
             }
         } catch (err) {
-            console.error("Refinment failed");
+            console.error("Refinement failed");
         } finally {
             setRefining(false);
         }
@@ -121,21 +147,26 @@ export default function LearningPathPage() {
     const chartData = steps.map((s) => ({
         name: s.skill,
         progress: s.status === 'COMPLETED' ? 100 : s.status === 'IN_PROGRESS' ? 50 : 10,
-        level: s.level === 'Advanced' ? 3 : s.level === 'Intermediate' ? 2 : 1
     }));
 
     return (
         <div className="space-y-12 pb-20 animate-in fade-in slide-in-from-bottom-6 duration-1000">
             <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-                <div className="space-y-2">
-                    <div className="flex items-center space-x-2 text-primary text-sm font-bold uppercase tracking-[0.2em]">
-                        <BrainCircuit size={16} />
-                        <span>AI Powered Curriculum</span>
+                <div className="space-y-4">
+                    <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-2 text-primary text-sm font-bold uppercase tracking-[0.2em]">
+                            <BrainCircuit size={16} />
+                            <span>AI Evolution</span>
+                        </div>
+                        <div className="flex items-center bg-orange-500/10 text-orange-500 px-4 py-1.5 rounded-full text-sm font-black border border-orange-500/20">
+                            <Flame size={18} className="mr-1 fill-orange-500" />
+                            <span>{streak} DAY STREAK</span>
+                        </div>
                     </div>
-                    <h1 className="text-5xl font-black text-textPrimary tracking-tight">Learning Roadmap</h1>
+                    <h1 className="text-5xl font-black text-textPrimary tracking-tight italic">Roadmap <span className="text-primary hover:text-primarySoft transition-colors">Mastery</span></h1>
                     <p className="text-textSecondary text-xl max-w-2xl leading-relaxed">
-                        Your personalized guide to mastering <span className="text-primary font-bold">{pathData?.targetRole}</span>.
-                        Track your progress and access premium resources.
+                        Personalized gap analysis for <span className="text-primary font-bold">{pathData?.targetRole}</span>.
+                        Keep up the heat! You're in the top 5% today.
                     </p>
                 </div>
                 <button
@@ -143,56 +174,47 @@ export default function LearningPathPage() {
                     disabled={refining}
                     className="group relative flex items-center space-x-3 px-10 py-5 bg-primary text-white rounded-[2rem] font-black shadow-[0_20px_40px_rgba(124,108,255,0.3)] hover:shadow-[0_25px_50px_rgba(124,108,255,0.4)] transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50 overflow-hidden"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                     {refining ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Sparkles size={20} />}
-                    <span>Re-Generate Path</span>
+                    <span>Evolve Path</span>
                 </button>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-10 text-textPrimary">
                 <div className="lg:col-span-3 space-y-10">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div className="bg-surface border border-border p-10 rounded-[3rem] shadow-2xl space-y-6 group hover:border-primary/50 transition-all">
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div className="bg-surface border border-border p-8 rounded-[3rem] shadow-2xl flex flex-col justify-between group hover:border-primary/50 transition-all">
                             <div className="flex justify-between items-start">
-                                <div className="p-5 bg-primary/10 rounded-2xl text-primary group-hover:scale-110 transition-transform">
-                                    <Award size={32} />
+                                <div className="p-4 bg-primary/10 rounded-2xl text-primary">
+                                    <TrendingUp size={28} />
                                 </div>
-                                <div className="text-right">
-                                    <span className="text-5xl font-black text-textPrimary leading-none">{progressPercent}%</span>
-                                    <p className="text-textMuted text-xs font-bold uppercase tracking-widest mt-2">{completedCount}/{steps.length} Steps</p>
-                                </div>
+                                <span className="text-4xl font-black leading-none">{progressPercent}%</span>
                             </div>
-                            <div className="space-y-4">
-                                <p className="text-textPrimary font-bold text-xl tracking-tight">Overall Progress</p>
+                            <div className="mt-8 space-y-4">
+                                <p className="font-bold text-xl">Overall Growth</p>
                                 <div className="h-2.5 bg-background rounded-full overflow-hidden border border-border">
-                                    <div
-                                        className="h-full bg-primary shadow-[0_0_15px_rgba(124,108,255,0.6)] transition-all duration-1000 ease-out"
-                                        style={{ width: `${progressPercent}%` }}
-                                    />
+                                    <div className="h-full bg-primary shadow-[0_0_15px_rgba(124,108,255,0.6)] transition-all duration-1000" style={{ width: `${progressPercent}%` }} />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="md:col-span-2 bg-surface border border-border p-10 rounded-[3rem] shadow-2xl flex flex-col">
-                            <div className="flex items-center justify-between mb-8 text-textPrimary">
-                                <p className="font-extrabold text-xl tracking-tight">Performance Analytics</p>
-                                <div className="flex items-center space-x-6 text-[10px] font-black uppercase tracking-widest text-textMuted">
-                                    <div className="flex items-center space-x-2">
-                                        <div className="w-2.5 h-2.5 rounded-sm bg-primary" />
-                                        <span>Skill Progress</span>
-                                    </div>
-                                </div>
+                        <div className="md:col-span-2 bg-surface border border-border p-8 rounded-[3rem] shadow-2xl flex flex-col">
+                            <div className="flex items-center justify-between mb-8">
+                                <p className="font-extrabold text-xl flex items-center gap-2">
+                                    <Target size={20} className="text-primary" /> Activity Tracker
+                                </p>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-textMuted">Weekly Effort</span>
                             </div>
-                            <div className="h-[140px] w-full mt-auto">
+                            <div className="h-[140px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={chartData}>
+                                    <BarChart data={activityData}>
                                         <Tooltip
                                             cursor={{ fill: 'rgba(124, 108, 255, 0.05)' }}
-                                            contentStyle={{ backgroundColor: '#11172A', border: '1px solid #2A2F55', borderRadius: '16px', fontWeight: 'bold' }}
+                                            contentStyle={{ backgroundColor: '#11172A', border: '1px solid #2A2F55', borderRadius: '16px' }}
                                         />
-                                        <Bar dataKey="progress" fill="#7C6CFF" radius={[6, 6, 0, 0]} barSize={32}>
-                                            {chartData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fillOpacity={entry.progress / 100 + 0.2} />
+                                        <Bar dataKey="effort" fill="#7C6CFF" radius={[6, 6, 0, 0]} barSize={24}>
+                                            {activityData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={index === 5 ? "#9B8CFF" : "#7C6CFF"} />
                                             ))}
                                         </Bar>
                                     </BarChart>
@@ -201,10 +223,45 @@ export default function LearningPathPage() {
                         </div>
                     </div>
 
-                    <div className="bg-surface border border-border p-10 rounded-[3rem] shadow-2xl">
-                        <h2 className="text-2xl font-black text-textPrimary mb-8 flex items-center space-x-4">
-                            <Library className="text-primary" />
-                            <span>Recommended Platforms</span>
+                    <div className="bg-surface border border-border p-10 rounded-[3.5rem] shadow-2xl space-y-10">
+                        <h2 className="text-3xl font-black flex items-center gap-4">
+                            <Medal className="text-primary" /> Certifications & Achievements
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {certifications.map((cert, i) => (
+                                <div key={i} className="bg-background border border-border p-6 rounded-[2rem] flex items-center gap-6 hover:border-primary/40 transition-all group">
+                                    <div className="text-4xl group-hover:scale-110 transition-transform">{cert.icon}</div>
+                                    <div>
+                                        <h4 className="font-black text-lg">{cert.title}</h4>
+                                        <p className="text-textSecondary text-xs font-bold uppercase tracking-widest mt-1">{cert.issuer} • {cert.date}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="bg-surface border border-border p-10 rounded-[3.5rem] shadow-2xl space-y-10">
+                        <h2 className="text-3xl font-black flex items-center gap-4">
+                            <GraduationCap className="text-primary" /> Completed Courses
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {completedCourses.map((course, i) => (
+                                <div key={i} className="bg-background border border-border p-6 rounded-[2rem] flex items-center justify-between hover:border-primary/40 transition-all group">
+                                    <div className="space-y-1">
+                                        <h4 className="font-black text-lg group-hover:text-primary transition-colors">{course.title}</h4>
+                                        <p className="text-textSecondary text-xs">{course.platform}</p>
+                                    </div>
+                                    <div className="text-primary bg-primary/10 px-4 py-2 rounded-xl text-xs font-black">
+                                        {course.duration}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="bg-surface border border-border p-10 rounded-[3.5rem] shadow-2xl space-y-10">
+                        <h2 className="text-3xl font-black flex items-center gap-4">
+                            <Library className="text-primary" /> Learning Eco-System
                         </h2>
                         <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
                             {platforms.map((platform, i) => {
@@ -215,13 +272,12 @@ export default function LearningPathPage() {
                                         href={platform.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex flex-col items-center justify-center p-6 rounded-3xl bg-background border border-border hover:border-primary/40 hover:-translate-y-2 transition-all group"
+                                        className="flex flex-col items-center justify-center p-8 rounded-[2.5rem] bg-background border border-border hover:border-primary/40 hover:-translate-y-2 transition-all group"
                                     >
-                                        <div className={`p-4 rounded-2xl ${platform.bg} ${platform.color} group-hover:scale-110 transition-transform`}>
-                                            <Icon size={24} />
+                                        <div className={`p-5 rounded-2xl ${platform.bg} ${platform.color} group-hover:rotate-12 transition-all`}>
+                                            <Icon size={28} />
                                         </div>
-                                        <span className="mt-4 text-xs font-black text-textSecondary group-hover:text-textPrimary transition-colors uppercase tracking-widest">{platform.name}</span>
-                                        <ExternalLink size={12} className="mt-2 text-textMuted group-hover:text-primary transition-colors" />
+                                        <span className="mt-4 text-xs font-black text-textSecondary group-hover:text-textPrimary tracking-widest">{platform.name}</span>
                                     </a>
                                 );
                             })}
@@ -229,55 +285,50 @@ export default function LearningPathPage() {
                     </div>
 
                     <div className="space-y-8">
-                        <h2 className="text-3xl font-black text-textPrimary flex items-center space-x-4">
-                            <LayoutDashboard className="text-primary" />
-                            <span>Mastery Checklist</span>
+                        <h2 className="text-4xl font-black flex items-center gap-4">
+                            <LayoutDashboard className="text-primary" /> Path Breakdown
                         </h2>
-                        <div className="grid gap-6">
+                        <div className="grid gap-8">
                             {steps.map((step, i) => (
                                 <div
                                     key={i}
-                                    className={`group relative bg-surface border-2 transition-all duration-500 rounded-[2.5rem] p-10 hover:shadow-[0_30px_60px_rgba(0,0,0,0.3)] ${step.status === 'COMPLETED' ? 'border-primary/40' : 'border-border'
+                                    className={`group bg-surface border-2 transition-all duration-500 rounded-[3rem] p-10 hover:shadow-2xl ${step.status === 'COMPLETED' ? 'border-primary/30' : 'border-border'
                                         }`}
                                 >
-                                    <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-                                        <div className="flex items-start space-x-8">
-                                            <div className={`mt-1 shrink-0 w-16 h-16 rounded-3xl flex items-center justify-center transition-all ${step.status === 'COMPLETED' ? 'bg-primary text-white scale-110 shadow-lg shadow-primary/30' : 'bg-background border-2 border-border text-textMuted group-hover:border-primary group-hover:text-primary'
+                                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
+                                        <div className="flex items-start gap-8">
+                                            <div className={`shrink-0 w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all ${step.status === 'COMPLETED' ? 'bg-primary text-white shadow-lg shadow-primary/30 rotate-12' : 'bg-background border-2 border-border text-textMuted group-hover:border-primary group-hover:text-primary'
                                                 }`}>
-                                                {step.status === 'COMPLETED' ? <CheckCircle2 size={32} /> : <Circle size={32} />}
+                                                {step.status === 'COMPLETED' ? <CheckCircle2 size={40} /> : <Circle size={40} />}
                                             </div>
-                                            <div className="space-y-3">
+                                            <div className="space-y-4">
                                                 <div className="flex flex-wrap items-center gap-4">
-                                                    <h3 className="text-3xl font-black text-textPrimary tracking-tight">{step.skill}</h3>
-                                                    <span className={`px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border ${step.level === 'Advanced' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' :
+                                                    <h3 className="text-4xl font-black tracking-tight">{step.skill}</h3>
+                                                    <span className={`px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest border ${step.level === 'Advanced' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' :
                                                             step.level === 'Intermediate' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 'bg-green-500/10 text-green-400 border-green-500/20'
                                                         }`}>
-                                                        {step.level} Level
+                                                        {step.level}
                                                     </span>
                                                 </div>
-                                                <p className="text-textSecondary text-lg leading-relaxed max-w-2xl">
-                                                    Comprehensive training on {step.skill}. Aim for high proficiency to match {pathData?.targetRole} industry standards.
+                                                <p className="text-textSecondary text-xl font-medium leading-relaxed max-w-2xl">
+                                                    Strategic mastery of {step.skill} specifically optimized for high-performance {pathData?.targetRole} output.
                                                 </p>
-                                                <div className="flex items-center gap-8 pt-4">
+                                                <div className="flex items-center gap-10 pt-4 border-t border-border/30 w-fit">
                                                     <div className="flex items-center space-x-2 text-textMuted text-xs font-bold uppercase tracking-widest">
                                                         <Clock size={16} className="text-primary" />
-                                                        <span>8-12 Modules</span>
-                                                    </div>
-                                                    <div className="flex items-center space-x-2 text-textMuted text-xs font-bold uppercase tracking-widest">
-                                                        <ArrowRight size={16} className="text-primary" />
-                                                        <span>Step No. {step.order}</span>
+                                                        <span>Level Up in 5h</span>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <button
                                             onClick={() => updateProgress(step.skill, step.status === 'COMPLETED' ? 'NOT_STARTED' : 'COMPLETED')}
-                                            className={`px-10 py-5 rounded-2xl font-black text-sm transition-all shadow-xl active:scale-95 ${step.status === 'COMPLETED'
+                                            className={`px-12 py-5 rounded-2xl font-black text-lg transition-all active:scale-95 ${step.status === 'COMPLETED'
                                                     ? 'bg-primary/10 text-primary border-2 border-primary/20 hover:bg-primary hover:text-white'
-                                                    : 'bg-primary text-white hover:bg-primarySoft hover:shadow-primary/30'
+                                                    : 'bg-primary text-white shadow-2xl shadow-primary/30 hover:bg-primarySoft'
                                                 }`}
                                         >
-                                            {step.status === 'COMPLETED' ? 'Start Over' : 'Mark as Mastered'}
+                                            {step.status === 'COMPLETED' ? 'Review Skill' : 'Master Skill'}
                                         </button>
                                     </div>
                                 </div>
@@ -287,41 +338,33 @@ export default function LearningPathPage() {
                 </div>
 
                 <aside className="space-y-10">
-                    <div className="bg-primary/5 border border-primary/20 rounded-[3rem] p-10 space-y-8 relative overflow-hidden group">
-                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all" />
-                        <h3 className="text-2xl font-black text-textPrimary tracking-tight flex items-center gap-3">
-                            <Sparkles size={24} className="text-primary" />
-                            <span>AI Strategist</span>
-                        </h3>
-                        <p className="text-textSecondary leading-relaxed text-lg font-medium">
-                            "You are already ahead of 65% of applicants. Master <span className="text-primary">{steps[0]?.skill}</span> this week to qualify for high-tier technical assessments."
+                    <div className="bg-primary border-4 border-primarySoft rounded-[3rem] p-10 text-white space-y-6 shadow-2xl shadow-primary/40 relative group">
+                        <Sparkles className="absolute top-6 right-6 opacity-40 group-hover:rotate-45 transition-transform" size={40} />
+                        <h3 className="text-3xl font-black italic">AI Insight</h3>
+                        <p className="text-white/80 leading-relaxed font-bold text-lg">
+                            "Mastering <span className="underline decoration-white/40">{steps[0]?.skill}</span> will increase your interview success rate for Senior {pathData?.targetRole} roles by 24%."
                         </p>
-                        <div className="space-y-4 pt-6 mt-6 border-t border-border">
-                            <p className="text-xs font-black text-textMuted uppercase tracking-widest">Growth Forecast</p>
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm font-bold text-textPrimary">Next Week</span>
-                                <span className="text-green-400 font-black">+18%</span>
-                            </div>
+                        <div className="pt-6 border-t border-white/20">
+                            <span className="text-[10px] font-black uppercase tracking-widest">Growth Factor: Critical</span>
                         </div>
                     </div>
 
                     <div className="bg-surface border border-border p-10 rounded-[3rem] shadow-2xl space-y-8">
-                        <h3 className="text-xl font-black text-textPrimary flex items-center gap-3">
-                            <Library size={20} className="text-primary" />
-                            <span>Quick Resources</span>
+                        <h3 className="text-2xl font-black flex items-center gap-3">
+                            <Zap size={24} className="text-primary" /> Quick Resources
                         </h3>
                         <div className="space-y-6">
                             {[
-                                { title: "Node.js Best Practices", time: "15m read", platform: "Medium" },
-                                { title: "React Performance", time: "2h course", platform: "YouTube" },
-                                { title: "Database Schema Design", time: "E-Book", platform: "O'Reilly" },
+                                { title: "Mastering Node.js Clusters", type: "Article", time: "12m", platform: "Medium" },
+                                { title: "React Context vs Redux", type: "Video", time: "25m", platform: "YouTube" },
+                                { title: "Kubernetes for Humans", type: "E-Book", time: "Daily", platform: "Technical" },
+                                { title: "System Design Cheat-Sheet", type: "PDF", time: "5m", platform: "Internal" },
                             ].map((res, i) => (
                                 <div key={i} className="flex items-center justify-between group cursor-pointer border-b border-border/50 pb-4 last:border-0 last:pb-0">
                                     <div className="space-y-1">
-                                        <p className="font-extrabold text-textPrimary group-hover:text-primary transition-all truncate max-w-[150px]">{res.title}</p>
+                                        <p className="font-extrabold text-base group-hover:text-primary transition-all truncate max-w-[150px]">{res.title}</p>
                                         <div className="flex items-center space-x-2">
                                             <span className="text-[10px] font-black text-textMuted uppercase tracking-widest">{res.platform}</span>
-                                            <span className="text-[8px] text-border">•</span>
                                             <span className="text-[10px] font-bold text-primary">{res.time}</span>
                                         </div>
                                     </div>
@@ -335,20 +378,3 @@ export default function LearningPathPage() {
         </div>
     );
 }
-
-const PlayCircle = ({ size, className }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-    >
-        <circle cx="12" cy="12" r="10" /><polygon points="10 8 16 12 10 16 10 8" />
-    </svg>
-);
