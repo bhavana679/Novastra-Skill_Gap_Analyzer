@@ -10,7 +10,8 @@ import {
     Tooltip,
     BarChart,
     Bar,
-    Cell
+    Cell,
+    CartesianGrid
 } from "recharts";
 import {
     Zap,
@@ -23,7 +24,12 @@ import {
     ChevronRight,
     LayoutDashboard,
     BrainCircuit,
-    Settings2
+    Settings2,
+    ExternalLink,
+    BookOpen,
+    Youtube,
+    Globe,
+    Library
 } from "lucide-react";
 
 export default function LearningPathPage() {
@@ -31,6 +37,14 @@ export default function LearningPathPage() {
     const [refining, setRefining] = useState(false);
     const [pathData, setPathData] = useState(null);
     const [error, setError] = useState("");
+
+    const platforms = [
+        { name: "Coursera", icon: Globe, url: "https://www.coursera.org", color: "text-blue-500", bg: "bg-blue-500/10" },
+        { name: "Udemy", icon: PlayCircle, url: "https://www.udemy.com", color: "text-purple-500", bg: "bg-purple-500/10" },
+        { name: "YouTube", icon: Youtube, url: "https://www.youtube.com", color: "text-red-500", bg: "bg-red-500/10" },
+        { name: "MDN Docs", icon: BookOpen, url: "https://developer.mozilla.org", color: "text-yellow-500", bg: "bg-yellow-500/10" },
+        { name: "LinkedIn", icon: Library, url: "https://www.linkedin.com/learning", color: "text-blue-600", bg: "bg-blue-600/10" },
+    ];
 
     const fetchData = async () => {
         const resumeId = localStorage.getItem("resumeId");
@@ -104,138 +118,167 @@ export default function LearningPathPage() {
     const completedCount = steps.filter(s => s.status === 'COMPLETED').length;
     const progressPercent = steps.length > 0 ? Math.round((completedCount / steps.length) * 100) : 0;
 
-    const chartData = steps.map((s, i) => ({
+    const chartData = steps.map((s) => ({
         name: s.skill,
-        value: s.status === 'COMPLETED' ? 100 : s.status === 'IN_PROGRESS' ? 50 : 10,
+        progress: s.status === 'COMPLETED' ? 100 : s.status === 'IN_PROGRESS' ? 50 : 10,
+        level: s.level === 'Advanced' ? 3 : s.level === 'Intermediate' ? 2 : 1
     }));
 
     return (
-        <div className="space-y-10 pb-20 animate-in fade-in slide-in-from-bottom-6 duration-1000">
+        <div className="space-y-12 pb-20 animate-in fade-in slide-in-from-bottom-6 duration-1000">
             <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
                 <div className="space-y-2">
                     <div className="flex items-center space-x-2 text-primary text-sm font-bold uppercase tracking-[0.2em]">
                         <BrainCircuit size={16} />
-                        <span>Interactive Roadmap</span>
+                        <span>AI Powered Curriculum</span>
                     </div>
-                    <h1 className="text-5xl font-black text-textPrimary tracking-tight">Learning Path</h1>
-                    <p className="text-textSecondary text-xl max-w-2xl">
-                        A dynamic AI-generated curriculum tailored to bridge your skill gaps for the <span className="text-primary font-bold">{pathData?.targetRole}</span> role.
+                    <h1 className="text-5xl font-black text-textPrimary tracking-tight">Learning Roadmap</h1>
+                    <p className="text-textSecondary text-xl max-w-2xl leading-relaxed">
+                        Your personalized guide to mastering <span className="text-primary font-bold">{pathData?.targetRole}</span>.
+                        Track your progress and access premium resources.
                     </p>
                 </div>
                 <button
                     onClick={refinePath}
                     disabled={refining}
-                    className="flex items-center space-x-3 px-8 py-4 bg-primary text-white rounded-2xl font-black shadow-2xl shadow-primary/40 hover:scale-105 transition-all active:scale-95 disabled:opacity-50"
+                    className="group relative flex items-center space-x-3 px-10 py-5 bg-primary text-white rounded-[2rem] font-black shadow-[0_20px_40px_rgba(124,108,255,0.3)] hover:shadow-[0_25px_50px_rgba(124,108,255,0.4)] transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50 overflow-hidden"
                 >
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                     {refining ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Sparkles size={20} />}
-                    <span>Refine with AI</span>
+                    <span>Re-Generate Path</span>
                 </button>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                <div className="lg:col-span-3 space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-surface border border-border p-8 rounded-[2rem] shadow-2xl space-y-4 group hover:border-primary/50 transition-colors">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
+                <div className="lg:col-span-3 space-y-10">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="bg-surface border border-border p-10 rounded-[3rem] shadow-2xl space-y-6 group hover:border-primary/50 transition-all">
                             <div className="flex justify-between items-start">
-                                <div className="p-4 bg-primary/10 rounded-2xl text-primary">
-                                    <Award size={28} />
+                                <div className="p-5 bg-primary/10 rounded-2xl text-primary group-hover:scale-110 transition-transform">
+                                    <Award size={32} />
                                 </div>
-                                <span className="text-4xl font-black text-textPrimary leading-none">{progressPercent}%</span>
+                                <div className="text-right">
+                                    <span className="text-5xl font-black text-textPrimary leading-none">{progressPercent}%</span>
+                                    <p className="text-textMuted text-xs font-bold uppercase tracking-widest mt-2">{completedCount}/{steps.length} Steps</p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-textPrimary font-bold text-lg">Path Completion</p>
-                                <div className="mt-4 h-2 bg-background rounded-full overflow-hidden border border-border">
+                            <div className="space-y-4">
+                                <p className="text-textPrimary font-bold text-xl tracking-tight">Overall Progress</p>
+                                <div className="h-2.5 bg-background rounded-full overflow-hidden border border-border">
                                     <div
-                                        className="h-full bg-primary shadow-[0_0_15px_rgba(124,108,255,0.5)] transition-all duration-1000"
+                                        className="h-full bg-primary shadow-[0_0_15px_rgba(124,108,255,0.6)] transition-all duration-1000 ease-out"
                                         style={{ width: `${progressPercent}%` }}
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="md:col-span-2 bg-surface border border-border p-8 rounded-[2rem] shadow-2xl">
-                            <div className="flex items-center justify-between mb-6">
-                                <p className="text-textPrimary font-bold text-lg">Skill Mastery Overview</p>
-                                <div className="flex items-center space-x-4 text-xs font-bold text-textMuted uppercase tracking-widest">
+                        <div className="md:col-span-2 bg-surface border border-border p-10 rounded-[3rem] shadow-2xl flex flex-col">
+                            <div className="flex items-center justify-between mb-8 text-textPrimary">
+                                <p className="font-extrabold text-xl tracking-tight">Performance Analytics</p>
+                                <div className="flex items-center space-x-6 text-[10px] font-black uppercase tracking-widest text-textMuted">
                                     <div className="flex items-center space-x-2">
-                                        <div className="w-2 h-2 rounded-full bg-primary" />
-                                        <span>Current Depth</span>
+                                        <div className="w-2.5 h-2.5 rounded-sm bg-primary" />
+                                        <span>Skill Progress</span>
                                     </div>
                                 </div>
                             </div>
-                            <div className="h-[120px] w-full">
+                            <div className="h-[140px] w-full mt-auto">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={chartData}>
-                                        <defs>
-                                            <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#7C6CFF" stopOpacity={0.3} />
-                                                <stop offset="95%" stopColor="#7C6CFF" stopOpacity={0} />
-                                            </linearGradient>
-                                        </defs>
+                                    <BarChart data={chartData}>
                                         <Tooltip
-                                            contentStyle={{ backgroundColor: '#11172A', border: '1px solid #2A2F55', borderRadius: '12px' }}
-                                            itemStyle={{ color: '#EAEAFF' }}
+                                            cursor={{ fill: 'rgba(124, 108, 255, 0.05)' }}
+                                            contentStyle={{ backgroundColor: '#11172A', border: '1px solid #2A2F55', borderRadius: '16px', fontWeight: 'bold' }}
                                         />
-                                        <Area type="monotone" dataKey="value" stroke="#7C6CFF" strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" />
-                                    </AreaChart>
+                                        <Bar dataKey="progress" fill="#7C6CFF" radius={[6, 6, 0, 0]} barSize={32}>
+                                            {chartData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fillOpacity={entry.progress / 100 + 0.2} />
+                                            ))}
+                                        </Bar>
+                                    </BarChart>
                                 </ResponsiveContainer>
                             </div>
                         </div>
                     </div>
 
-                    <div className="space-y-6">
-                        <h2 className="text-2xl font-black text-textPrimary flex items-center space-x-3">
-                            <LayoutDashboard className="text-primary" />
-                            <span>Curriculum Steps</span>
+                    <div className="bg-surface border border-border p-10 rounded-[3rem] shadow-2xl">
+                        <h2 className="text-2xl font-black text-textPrimary mb-8 flex items-center space-x-4">
+                            <Library className="text-primary" />
+                            <span>Recommended Platforms</span>
                         </h2>
-                        <div className="space-y-4">
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+                            {platforms.map((platform, i) => {
+                                const Icon = platform.icon;
+                                return (
+                                    <a
+                                        key={i}
+                                        href={platform.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex flex-col items-center justify-center p-6 rounded-3xl bg-background border border-border hover:border-primary/40 hover:-translate-y-2 transition-all group"
+                                    >
+                                        <div className={`p-4 rounded-2xl ${platform.bg} ${platform.color} group-hover:scale-110 transition-transform`}>
+                                            <Icon size={24} />
+                                        </div>
+                                        <span className="mt-4 text-xs font-black text-textSecondary group-hover:text-textPrimary transition-colors uppercase tracking-widest">{platform.name}</span>
+                                        <ExternalLink size={12} className="mt-2 text-textMuted group-hover:text-primary transition-colors" />
+                                    </a>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="space-y-8">
+                        <h2 className="text-3xl font-black text-textPrimary flex items-center space-x-4">
+                            <LayoutDashboard className="text-primary" />
+                            <span>Mastery Checklist</span>
+                        </h2>
+                        <div className="grid gap-6">
                             {steps.map((step, i) => (
                                 <div
                                     key={i}
-                                    className={`group relative overflow-hidden bg-surface border transition-all duration-500 rounded-3xl p-8 hover:shadow-2xl ${step.status === 'COMPLETED' ? 'border-primary shadow-lg shadow-primary/10' : 'border-border'
+                                    className={`group relative bg-surface border-2 transition-all duration-500 rounded-[2.5rem] p-10 hover:shadow-[0_30px_60px_rgba(0,0,0,0.3)] ${step.status === 'COMPLETED' ? 'border-primary/40' : 'border-border'
                                         }`}
                                 >
-                                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                        <div className="flex items-start space-x-6">
-                                            <div className={`mt-1 flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${step.status === 'COMPLETED' ? 'bg-primary text-white' : 'bg-background border border-border text-textMuted group-hover:border-primary/50 group-hover:text-primary'
+                                    <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                                        <div className="flex items-start space-x-8">
+                                            <div className={`mt-1 shrink-0 w-16 h-16 rounded-3xl flex items-center justify-center transition-all ${step.status === 'COMPLETED' ? 'bg-primary text-white scale-110 shadow-lg shadow-primary/30' : 'bg-background border-2 border-border text-textMuted group-hover:border-primary group-hover:text-primary'
                                                 }`}>
-                                                {step.status === 'COMPLETED' ? <CheckCircle2 size={24} /> : <Circle size={24} />}
+                                                {step.status === 'COMPLETED' ? <CheckCircle2 size={32} /> : <Circle size={32} />}
                                             </div>
-                                            <div className="space-y-2">
-                                                <div className="flex items-center space-x-3">
-                                                    <h3 className="text-2xl font-black text-textPrimary tracking-tight">{step.skill}</h3>
-                                                    <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${step.level === 'Advanced' ? 'bg-orange-500/20 text-orange-400' :
-                                                            step.level === 'Intermediate' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'
+                                            <div className="space-y-3">
+                                                <div className="flex flex-wrap items-center gap-4">
+                                                    <h3 className="text-3xl font-black text-textPrimary tracking-tight">{step.skill}</h3>
+                                                    <span className={`px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border ${step.level === 'Advanced' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' :
+                                                            step.level === 'Intermediate' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 'bg-green-500/10 text-green-400 border-green-500/20'
                                                         }`}>
-                                                        {step.level}
+                                                        {step.level} Level
                                                     </span>
                                                 </div>
-                                                <p className="text-textSecondary leading-relaxed max-w-xl">
-                                                    Focus on {step.skill} basics combined with practical {pathData?.targetRole} applications.
+                                                <p className="text-textSecondary text-lg leading-relaxed max-w-2xl">
+                                                    Comprehensive training on {step.skill}. Aim for high proficiency to match {pathData?.targetRole} industry standards.
                                                 </p>
-                                                <div className="flex items-center space-x-6 pt-2">
+                                                <div className="flex items-center gap-8 pt-4">
                                                     <div className="flex items-center space-x-2 text-textMuted text-xs font-bold uppercase tracking-widest">
-                                                        <Clock size={14} className="text-primary" />
-                                                        <span>Approx. 4-6 Hours</span>
+                                                        <Clock size={16} className="text-primary" />
+                                                        <span>8-12 Modules</span>
                                                     </div>
                                                     <div className="flex items-center space-x-2 text-textMuted text-xs font-bold uppercase tracking-widest">
-                                                        <Settings2 size={14} className="text-primary" />
-                                                        <span>Step #{step.order}</span>
+                                                        <ArrowRight size={16} className="text-primary" />
+                                                        <span>Step No. {step.order}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex items-center space-x-3">
-                                            <button
-                                                onClick={() => updateProgress(step.skill, step.status === 'COMPLETED' ? 'IN_PROGRESS' : 'COMPLETED')}
-                                                className={`px-6 py-3 rounded-xl font-black text-sm transition-all whitespace-nowrap ${step.status === 'COMPLETED'
-                                                        ? 'bg-primary/10 text-primary border border-primary/20 hover:bg-primary hover:text-white'
-                                                        : 'bg-primary text-white shadow-xl shadow-primary/20 hover:scale-105 active:scale-95'
-                                                    }`}
-                                            >
-                                                {step.status === 'COMPLETED' ? 'Mark Incomplete' : 'Complete Step'}
-                                            </button>
-                                        </div>
+                                        <button
+                                            onClick={() => updateProgress(step.skill, step.status === 'COMPLETED' ? 'NOT_STARTED' : 'COMPLETED')}
+                                            className={`px-10 py-5 rounded-2xl font-black text-sm transition-all shadow-xl active:scale-95 ${step.status === 'COMPLETED'
+                                                    ? 'bg-primary/10 text-primary border-2 border-primary/20 hover:bg-primary hover:text-white'
+                                                    : 'bg-primary text-white hover:bg-primarySoft hover:shadow-primary/30'
+                                                }`}
+                                        >
+                                            {step.status === 'COMPLETED' ? 'Start Over' : 'Mark as Mastered'}
+                                        </button>
                                     </div>
                                 </div>
                             ))}
@@ -243,46 +286,69 @@ export default function LearningPathPage() {
                     </div>
                 </div>
 
-                <aside className="space-y-8">
-                    <div className="bg-gradient-to-br from-primary to-primarySoft p-1 rounded-[2.5rem] shadow-2xl shadow-primary/30 group">
-                        <div className="bg-surface rounded-[2.3rem] p-8 space-y-6">
-                            <h3 className="text-2xl font-black text-textPrimary tracking-tight">AI Insights</h3>
-                            <p className="text-textSecondary leading-relaxed italic text-sm">
-                                "Based on the current market trends for {pathData?.targetRole} roles, mastering {steps[0]?.skill || 'the first step'} is your highest priority to unlock 80% of technical interviews."
-                            </p>
-                            <div className="pt-4 border-t border-border flex items-center justify-between">
-                                <span className="text-xs font-bold text-textMuted uppercase tracking-widest">Powered by Novastra AI</span>
-                                <div className="flex -space-x-2">
-                                    {[1, 2, 3].map(i => (
-                                        <div key={i} className="w-8 h-8 rounded-full bg-background border border-surface flex items-center justify-center text-[10px] font-bold text-primary">AI</div>
-                                    ))}
-                                </div>
+                <aside className="space-y-10">
+                    <div className="bg-primary/5 border border-primary/20 rounded-[3rem] p-10 space-y-8 relative overflow-hidden group">
+                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all" />
+                        <h3 className="text-2xl font-black text-textPrimary tracking-tight flex items-center gap-3">
+                            <Sparkles size={24} className="text-primary" />
+                            <span>AI Strategist</span>
+                        </h3>
+                        <p className="text-textSecondary leading-relaxed text-lg font-medium">
+                            "You are already ahead of 65% of applicants. Master <span className="text-primary">{steps[0]?.skill}</span> this week to qualify for high-tier technical assessments."
+                        </p>
+                        <div className="space-y-4 pt-6 mt-6 border-t border-border">
+                            <p className="text-xs font-black text-textMuted uppercase tracking-widest">Growth Forecast</p>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-bold text-textPrimary">Next Week</span>
+                                <span className="text-green-400 font-black">+18%</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-surface border border-border p-8 rounded-[2rem] shadow-2xl space-y-6">
-                        <h3 className="text-xl font-black text-textPrimary">Suggested Resources</h3>
-                        <div className="space-y-4">
+                    <div className="bg-surface border border-border p-10 rounded-[3rem] shadow-2xl space-y-8">
+                        <h3 className="text-xl font-black text-textPrimary flex items-center gap-3">
+                            <Library size={20} className="text-primary" />
+                            <span>Quick Resources</span>
+                        </h3>
+                        <div className="space-y-6">
                             {[
-                                { title: "Advanced React Guide", meta: "Full Course", color: "text-blue-400" },
-                                { title: "System Design for High Scale", meta: "E-Book", color: "text-orange-400" },
+                                { title: "Node.js Best Practices", time: "15m read", platform: "Medium" },
+                                { title: "React Performance", time: "2h course", platform: "YouTube" },
+                                { title: "Database Schema Design", time: "E-Book", platform: "O'Reilly" },
                             ].map((res, i) => (
-                                <div key={i} className="flex items-center justify-between group cursor-pointer">
+                                <div key={i} className="flex items-center justify-between group cursor-pointer border-b border-border/50 pb-4 last:border-0 last:pb-0">
                                     <div className="space-y-1">
-                                        <p className="font-bold text-textPrimary group-hover:text-primary transition-colors">{res.title}</p>
-                                        <p className="text-[10px] font-black text-textMuted uppercase tracking-[0.2em]">{res.meta}</p>
+                                        <p className="font-extrabold text-textPrimary group-hover:text-primary transition-all truncate max-w-[150px]">{res.title}</p>
+                                        <div className="flex items-center space-x-2">
+                                            <span className="text-[10px] font-black text-textMuted uppercase tracking-widest">{res.platform}</span>
+                                            <span className="text-[8px] text-border">•</span>
+                                            <span className="text-[10px] font-bold text-primary">{res.time}</span>
+                                        </div>
                                     </div>
-                                    <ArrowRight size={16} className="text-textMuted group-hover:text-primary transition-all translate-x-0 group-hover:translate-x-2" />
+                                    <ChevronRight size={18} className="text-textMuted group-hover:text-primary transition-all group-hover:translate-x-1" />
                                 </div>
                             ))}
                         </div>
-                        <button className="w-full py-4 text-xs font-black uppercase tracking-[0.2em] text-primary border border-primary/20 rounded-2xl hover:bg-primary/5 transition-all">
-                            Browse All Library
-                        </button>
                     </div>
                 </aside>
             </div>
         </div>
     );
 }
+
+const PlayCircle = ({ size, className }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+    >
+        <circle cx="12" cy="12" r="10" /><polygon points="10 8 16 12 10 16 10 8" />
+    </svg>
+);
