@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     BarChart,
     Bar,
@@ -26,31 +26,60 @@ import {
     Loader2
 } from 'lucide-react';
 
-const skillData = [
-    { name: 'Frontend', completed: 85, inProgress: 10, remaining: 5 },
-    { name: 'Backend', completed: 60, inProgress: 25, remaining: 15 },
-    { name: 'UI/UX', completed: 40, inProgress: 40, remaining: 20 },
-    { name: 'DevOps', completed: 20, inProgress: 30, remaining: 50 },
-    { name: 'Testing', completed: 70, inProgress: 15, remaining: 15 },
-];
-
-const overallStatus = [
-    { name: 'Completed', value: 12, color: '#7C6CFF' },
-    { name: 'In-progress', value: 5, color: '#9B8CFF' },
-    { name: 'Remaining', value: 8, color: '#2A2F55' },
-];
-
-const categoryDistribution = [
-    { name: 'Technical', value: 45, color: '#7C6CFF' },
-    { name: 'Soft Skills', value: 25, color: '#9B8CFF' },
-    { name: 'Tools', value: 30, color: '#4F46E5' },
-];
-
 export default function ProgressPage() {
     const [showUpload, setShowUpload] = useState(false);
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [stats, setStats] = useState({
+        completed: 0,
+        inProgress: 0,
+        remaining: 0,
+        skillProficiency: [],
+        overallStatus: [],
+        categoryDistribution: []
+    });
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const response = await fetch("http://localhost:5001/api/resume/all");
+            const data = await response.json();
+
+            if (data.success && data.resumes.length > 0) {
+                const latest = data.resumes[0];
+                const skills = latest.skills || [];
+
+                const proficiency = [
+                    { name: 'Technical', completed: 75 },
+                    { name: 'Tools', completed: 60 },
+                    { name: 'Soft Skills', completed: 85 }
+                ];
+
+                setStats({
+                    completed: skills.length,
+                    inProgress: Math.ceil(skills.length / 3),
+                    remaining: 5,
+                    skillProficiency: proficiency,
+                    overallStatus: [
+                        { name: 'Completed', value: skills.length, color: '#7C6CFF' },
+                        { name: 'In-progress', value: Math.ceil(skills.length / 3), color: '#9B8CFF' },
+                        { name: 'Remaining', value: 5, color: '#2A2F55' },
+                    ],
+                    categoryDistribution: [
+                        { name: 'Technical', value: 45, color: '#7C6CFF' },
+                        { name: 'Soft Skills', value: 25, color: '#9B8CFF' },
+                        { name: 'Tools', value: 30, color: '#4F46E5' },
+                    ]
+                });
+            }
+        } catch (err) {
+            console.error("Failed to fetch progress data", err);
+        }
+    };
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -82,13 +111,12 @@ export default function ProgressPage() {
                 body: formData,
             });
 
-            const data = await response.json();
-
             if (response.ok) {
                 setShowUpload(false);
                 setFile(null);
-                alert("Resume uploaded successfully! Your progress analytics will update shortly.");
+                await fetchData();
             } else {
+                const data = await response.json();
                 setError(data.message || "Something went wrong during upload.");
             }
         } catch (err) {
@@ -180,7 +208,7 @@ export default function ProgressPage() {
                     </div>
                     <div>
                         <p className="text-sm text-[#B4B8E6]">Completed Skills</p>
-                        <h3 className="text-2xl font-bold text-[#EAEAFF]">12</h3>
+                        <h3 className="text-2xl font-bold text-[#EAEAFF]">{stats.completed}</h3>
                     </div>
                 </div>
 
@@ -190,7 +218,7 @@ export default function ProgressPage() {
                     </div>
                     <div>
                         <p className="text-sm text-[#B4B8E6]">In Progress</p>
-                        <h3 className="text-2xl font-bold text-[#EAEAFF]">5</h3>
+                        <h3 className="text-2xl font-bold text-[#EAEAFF]">{stats.inProgress}</h3>
                     </div>
                 </div>
 
@@ -200,7 +228,7 @@ export default function ProgressPage() {
                     </div>
                     <div>
                         <p className="text-sm text-[#B4B8E6]">Remaining</p>
-                        <h3 className="text-2xl font-bold text-[#EAEAFF]">8</h3>
+                        <h3 className="text-2xl font-bold text-[#EAEAFF]">{stats.remaining}</h3>
                     </div>
                 </div>
             </div>
@@ -215,7 +243,11 @@ export default function ProgressPage() {
                     </div>
                     <div className="h-[350px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={skillData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                            <BarChart data={stats.skillProficiency.length > 0 ? stats.skillProficiency : [
+                                { name: 'Technical', completed: 0 },
+                                { name: 'Tools', completed: 0 },
+                                { name: 'Soft Skills', completed: 0 }
+                            ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#2A2F55" vertical={false} />
                                 <XAxis
                                     dataKey="name"
@@ -263,7 +295,9 @@ export default function ProgressPage() {
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
-                                    data={overallStatus}
+                                    data={stats.overallStatus.length > 0 ? stats.overallStatus : [
+                                        { name: 'No Data', value: 1, color: '#2A2F55' }
+                                    ]}
                                     cx="50%"
                                     cy="50%"
                                     innerRadius={80}
@@ -271,7 +305,7 @@ export default function ProgressPage() {
                                     paddingAngle={8}
                                     dataKey="value"
                                 >
-                                    {overallStatus.map((entry, index) => (
+                                    {stats.overallStatus.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
                                     ))}
                                 </Pie>
@@ -300,14 +334,16 @@ export default function ProgressPage() {
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
-                                    data={categoryDistribution}
+                                    data={stats.categoryDistribution.length > 0 ? stats.categoryDistribution : [
+                                        { name: 'No Data', value: 1, color: '#2A2F55' }
+                                    ]}
                                     cx="50%"
                                     cy="50%"
                                     outerRadius={100}
                                     dataKey="value"
                                     label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
                                 >
-                                    {categoryDistribution.map((entry, index) => (
+                                    {stats.categoryDistribution.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
                                     ))}
                                 </Pie>
@@ -327,9 +363,9 @@ export default function ProgressPage() {
                     <h3 className="text-xl font-semibold text-[#EAEAFF] mb-6">Recent Achievements</h3>
                     <div className="space-y-4">
                         {[
+                            { title: "Skill Analysis Complete", date: "Just now", score: "Active" },
                             { title: "React Hooks Mastery", date: "2 days ago", score: "95%" },
-                            { title: "Database Optimization", date: "1 week ago", score: "88%" },
-                            { title: "Tailwind UI Components", date: "2 weeks ago", score: "92%" }
+                            { title: "Database Optimization", date: "1 week ago", score: "88%" }
                         ].map((item, i) => (
                             <div key={i} className="flex items-center justify-between p-4 bg-[#0B1020] rounded-2xl border border-[#2A2F55] hover:border-[#7C6CFF]/50 transition-colors">
                                 <div className="flex items-center gap-4">
