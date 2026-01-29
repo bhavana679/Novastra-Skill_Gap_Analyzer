@@ -5,7 +5,6 @@ const getResumeById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Check if the provided ID is a valid MongoDB ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 success: false,
@@ -13,10 +12,8 @@ const getResumeById = async (req, res) => {
             });
         }
 
-        // Search for the resume in the database
         const resume = await Resume.findById(id);
 
-        // If no resume is found with that ID
         if (!resume) {
             return res.status(404).json({
                 success: false,
@@ -24,7 +21,6 @@ const getResumeById = async (req, res) => {
             });
         }
 
-        // Return the resume details
         return res.status(200).json({
             success: true,
             resume: {
@@ -46,4 +42,19 @@ const getResumeById = async (req, res) => {
     }
 };
 
-export { getResumeById };
+const getResumes = async (req, res) => {
+    try {
+        const resumes = await Resume.find().sort({ createdAt: -1 });
+        return res.status(200).json({
+            success: true,
+            resumes
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message || 'Error fetching resumes'
+        });
+    }
+};
+
+export { getResumeById, getResumes };
