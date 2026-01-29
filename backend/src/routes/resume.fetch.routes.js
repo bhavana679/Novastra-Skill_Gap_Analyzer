@@ -1,5 +1,5 @@
 import express from 'express';
-import { getResumeById } from '../controllers/resume.fetch.controller.js';
+import { getResumeById, getResumes } from '../controllers/resume.fetch.controller.js';
 
 const router = express.Router();
 
