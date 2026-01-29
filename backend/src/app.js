@@ -7,6 +7,7 @@ import careerRoutes from './routes/career.routes.js';
 import learningPathRoutes from './routes/learningPath.routes.js';
 import aiLearningPathRoutes from './routes/aiLearningPath.routes.js';
 import resourceRoutes from './routes/resource.routes.js';
+import authRoutes from './routes/auth.routes.js';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use('/api/career', careerRoutes);
 app.use('/api/learning-path', learningPathRoutes);
 app.use('/api/learning-path', aiLearningPathRoutes);
 app.use('/api/resources', resourceRoutes);
+app.use('/api/auth', authRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Backend is connected!' });
