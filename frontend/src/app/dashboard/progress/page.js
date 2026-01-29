@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
     BarChart,
     Bar,
@@ -14,7 +14,17 @@ import {
     Cell,
     Legend
 } from 'recharts';
-import { Target, CheckCircle2, Clock, BookOpen, TrendingUp } from 'lucide-react';
+import {
+    Target,
+    CheckCircle2,
+    Clock,
+    BookOpen,
+    TrendingUp,
+    Upload,
+    X,
+    FileText,
+    Loader2
+} from 'lucide-react';
 
 const skillData = [
     { name: 'Frontend', completed: 85, inProgress: 10, remaining: 5 },
@@ -37,12 +47,131 @@ const categoryDistribution = [
 ];
 
 export default function ProgressPage() {
+    const [showUpload, setShowUpload] = useState(false);
+    const [file, setFile] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            if (selectedFile.type === "application/pdf" || selectedFile.type.startsWith("image/")) {
+                setFile(selectedFile);
+                setError("");
+            } else {
+                setError("Please upload a PDF or an image file.");
+            }
+        }
+    };
+
+    const handleUpload = async () => {
+        if (!file) {
+            setError("Please select a file first.");
+            return;
+        }
+
+        setLoading(true);
+        setError("");
+
+        const formData = new FormData();
+        formData.append("resume", file);
+
+        try {
+            const response = await fetch("http://localhost:5001/api/resume/upload", {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setShowUpload(false);
+                setFile(null);
+                alert("Resume uploaded successfully! Your progress analytics will update shortly.");
+            } else {
+                setError(data.message || "Something went wrong during upload.");
+            }
+        } catch (err) {
+            setError("Failed to connect to the server.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <div className="space-y-8 animate-in fade-in duration-700">
-            <div className="flex flex-col space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight text-[#EAEAFF]">Progress Tracking</h1>
-                <p className="text-[#B4B8E6]">Monitor your learning journey and skill development analytics.</p>
+        <div className="space-y-8 animate-in fade-in duration-700 relative">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-col space-y-2">
+                    <h1 className="text-3xl font-bold tracking-tight text-[#EAEAFF]">Progress Tracking</h1>
+                    <p className="text-[#B4B8E6]">Monitor your learning journey and skill development analytics.</p>
+                </div>
+                <button
+                    onClick={() => setShowUpload(true)}
+                    className="flex items-center justify-center gap-2 bg-[#7C6CFF] hover:bg-[#9B8CFF] text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-lg shadow-[#7C6CFF]/20 active:scale-95 whitespace-nowrap"
+                >
+                    <Upload size={20} />
+                    Upload Resume
+                </button>
             </div>
+
+            {showUpload && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="w-full max-w-xl bg-[#11172A] border border-[#2A2F55] rounded-3xl p-8 shadow-2xl relative">
+                        <button
+                            onClick={() => setShowUpload(false)}
+                            className="absolute top-6 right-6 text-[#8A90C2] hover:text-[#EAEAFF] transition-colors"
+                        >
+                            <X size={24} />
+                        </button>
+
+                        <div className="text-center mb-8">
+                            <h2 className="text-2xl font-bold text-[#EAEAFF]">Update Your Progress</h2>
+                            <p className="text-[#B4B8E6] mt-2">Upload a newer version of your resume to refresh your stats.</p>
+                        </div>
+
+                        <div className="relative group">
+                            <input
+                                type="file"
+                                className="absolute inset-0 z-10 cursor-pointer opacity-0"
+                                accept=".pdf,image/*"
+                                onChange={handleFileChange}
+                            />
+                            <div className={`border-2 border-dashed rounded-2xl p-10 flex flex-col items-center gap-4 transition-all ${file ? 'border-[#7C6CFF] bg-[#7C6CFF]/5' : 'border-[#2A2F55] group-hover:border-[#7C6CFF]/50'}`}>
+                                <div className="w-16 h-16 rounded-full bg-[#7C6CFF]/10 flex items-center justify-center text-[#7C6CFF]">
+                                    <FileText size={32} />
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-lg font-medium text-[#EAEAFF]">
+                                        {file ? file.name : "Click or drag to select file"}
+                                    </p>
+                                    <p className="text-xs text-[#8A90C2] mt-1">Supports PDF, JPG, PNG (Max 5MB)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {error && (
+                            <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-center text-sm text-red-400">
+                                {error}
+                            </div>
+                        )}
+
+                        <button
+                            onClick={handleUpload}
+                            disabled={loading || !file}
+                            className="w-full mt-8 flex items-center justify-center gap-2 bg-[#7C6CFF] hover:bg-[#9B8CFF] disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 rounded-2xl text-lg font-bold shadow-lg transition-all"
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 size={24} className="animate-spin" />
+                                    Analyzing...
+                                </>
+                            ) : (
+                                "Update Analytics"
+                            )}
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-[#11172A] p-6 rounded-2xl border border-[#2A2F55] flex items-center space-x-4">
