@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
     User,
@@ -15,11 +15,17 @@ import {
     Menu,
     X
 } from "lucide-react";
+import { api } from "@/lib/api";
 
 export default function DashboardLayout({ children }) {
     const pathname = usePathname();
+    const router = useRouter();
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+    // Get user from localStorage
+    const userString = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+    const user = userString ? JSON.parse(userString) : { name: 'User' };
 
     const navLinks = [
         { name: "Profile", href: "/dashboard/profile", icon: User },
@@ -28,6 +34,10 @@ export default function DashboardLayout({ children }) {
         { name: "Progress", href: "/dashboard/progress", icon: BarChart3 },
         { name: "Comparison", href: "/dashboard/comparison", icon: ArrowLeftRight },
     ];
+
+    const handleLogout = () => {
+        api.logout();
+    };
 
     return (
         <div className="flex min-h-screen bg-background text-textPrimary">
@@ -75,8 +85,8 @@ export default function DashboardLayout({ children }) {
                                 key={link.href}
                                 href={link.href}
                                 className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group relative ${isActive
-                                        ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                        : "text-textSecondary hover:bg-border/30 hover:text-textPrimary"
+                                    ? "bg-primary text-white shadow-lg shadow-primary/20"
+                                    : "text-textSecondary hover:bg-border/30 hover:text-textPrimary"
                                     }`}
                             >
                                 <Icon size={20} className={isCollapsed ? "mx-auto" : ""} />
@@ -96,17 +106,20 @@ export default function DashboardLayout({ children }) {
                     <div className={`flex items-center bg-background/50 rounded-2xl border border-border transition-all ${isCollapsed ? "p-2 justify-center" : "p-4 space-x-3"
                         }`}>
                         <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold shrink-0">
-                            U
+                            {user.name[0]}
                         </div>
                         {!isCollapsed && (
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold truncate text-textPrimary">User Name</p>
+                                <p className="text-sm font-semibold truncate text-textPrimary">{user.name}</p>
                                 <p className="text-xs text-textMuted truncate">Free Plan</p>
                             </div>
                         )}
                     </div>
-                    <button className={`w-full mt-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors flex items-center justify-center ${isCollapsed ? "" : "space-x-2 px-4"
-                        }`}>
+                    <button
+                        onClick={handleLogout}
+                        className={`w-full mt-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors flex items-center justify-center ${isCollapsed ? "" : "space-x-2 px-4"
+                            }`}
+                    >
                         <LogOut size={18} />
                         {!isCollapsed && <span>Logout</span>}
                     </button>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 import {
     ResponsiveContainer,
     AreaChart,
@@ -38,6 +40,7 @@ import {
 } from "lucide-react";
 
 export default function LearningPathPage() {
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [refining, setRefining] = useState(false);
     const [pathData, setPathData] = useState(null);
@@ -75,18 +78,17 @@ export default function LearningPathPage() {
     const fetchData = async () => {
         const resumeId = localStorage.getItem("resumeId");
         if (!resumeId) {
-            setLoading(false);
+            router.push("/upload");
             return;
         }
 
         try {
-            const response = await fetch(`http://localhost:5001/api/learning-path/${resumeId}`);
-            const json = await response.json();
+            const json = await api.get(`/learning-path/${resumeId}`);
             if (json.success) {
                 setPathData(json.data);
             }
         } catch (err) {
-            setError("Connect to backend to see your live roadmap.");
+            setError(err.message || "Connect to backend to see your live roadmap.");
         } finally {
             setLoading(false);
         }
@@ -99,14 +101,8 @@ export default function LearningPathPage() {
     const updateProgress = async (skill, newStatus) => {
         const resumeId = localStorage.getItem("resumeId");
         try {
-            const response = await fetch("http://localhost:5001/api/learning-path/progress", {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ resumeId, skill, status: newStatus }),
-            });
-            if (response.ok) {
-                fetchData();
-            }
+            await api.patch("/learning-path/progress", { resumeId, skill, status: newStatus });
+            fetchData();
         } catch (err) {
             console.error("Failed to update progress");
         }
@@ -116,14 +112,8 @@ export default function LearningPathPage() {
         const resumeId = localStorage.getItem("resumeId");
         setRefining(true);
         try {
-            const response = await fetch("http://localhost:5001/api/learning-path/refine", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ resumeId }),
-            });
-            if (response.ok) {
-                fetchData();
-            }
+            await api.post("/learning-path/refine", { resumeId });
+            fetchData();
         } catch (err) {
             console.error("Refinement failed");
         } finally {
@@ -305,7 +295,7 @@ export default function LearningPathPage() {
                                                 <div className="flex flex-wrap items-center gap-4">
                                                     <h3 className="text-4xl font-black tracking-tight">{step.skill}</h3>
                                                     <span className={`px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest border ${step.level === 'Advanced' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' :
-                                                            step.level === 'Intermediate' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 'bg-green-500/10 text-green-400 border-green-500/20'
+                                                        step.level === 'Intermediate' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 'bg-green-500/10 text-green-400 border-green-500/20'
                                                         }`}>
                                                         {step.level}
                                                     </span>
@@ -324,8 +314,8 @@ export default function LearningPathPage() {
                                         <button
                                             onClick={() => updateProgress(step.skill, step.status === 'COMPLETED' ? 'NOT_STARTED' : 'COMPLETED')}
                                             className={`px-12 py-5 rounded-2xl font-black text-lg transition-all active:scale-95 ${step.status === 'COMPLETED'
-                                                    ? 'bg-primary/10 text-primary border-2 border-primary/20 hover:bg-primary hover:text-white'
-                                                    : 'bg-primary text-white shadow-2xl shadow-primary/30 hover:bg-primarySoft'
+                                                ? 'bg-primary/10 text-primary border-2 border-primary/20 hover:bg-primary hover:text-white'
+                                                : 'bg-primary text-white shadow-2xl shadow-primary/30 hover:bg-primarySoft'
                                                 }`}
                                         >
                                             {step.status === 'COMPLETED' ? 'Review Skill' : 'Master Skill'}

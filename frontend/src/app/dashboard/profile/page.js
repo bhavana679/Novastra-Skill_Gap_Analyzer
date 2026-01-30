@@ -14,6 +14,7 @@ import {
     Cell
 } from "recharts";
 import { Zap, Trophy, TrendingUp, Target, ChevronRight, BarChart3, Clock, FileText, Briefcase } from "lucide-react";
+import { api } from "@/lib/api";
 
 export default function ProfileDashboard() {
     const router = useRouter();
@@ -26,24 +27,21 @@ export default function ProfileDashboard() {
         const fetchData = async () => {
             const resumeId = localStorage.getItem("resumeId");
             if (!resumeId) {
-                setLoading(false);
+                router.push("/upload");
                 return;
             }
 
             try {
-                const [resumeRes, pathRes] = await Promise.all([
-                    fetch(`http://localhost:5001/api/resume/${resumeId}`),
-                    fetch(`http://localhost:5001/api/learning-path/${resumeId}`)
+                const [resumeJson, pathJson] = await Promise.all([
+                    api.get(`/resume/${resumeId}`),
+                    api.get(`/learning-path/${resumeId}`)
                 ]);
-
-                const resumeJson = await resumeRes.json();
-                const pathJson = await pathRes.json();
 
                 if (resumeJson.success) setResumeData(resumeJson.resume);
                 if (pathJson.success) setLearningPath(pathJson.data);
 
             } catch (err) {
-                setError("Failed to fetch profile data. Please check your connection.");
+                setError(err.message || "Failed to fetch profile data. Please check your connection.");
             } finally {
                 setLoading(false);
             }

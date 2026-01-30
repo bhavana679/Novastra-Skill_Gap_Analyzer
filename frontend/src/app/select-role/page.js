@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 
 const roles = [
     { id: "frontend", title: "Frontend Developer", description: "Build stunning user interfaces with React, Next.js, and Tailwind.", icon: "🎨" },
@@ -35,26 +36,19 @@ export default function SelectRolePage() {
         setError("");
 
         try {
-            const response = await fetch("http://localhost:5001/api/learning-path/generate", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    resumeId: resumeId,
-                    targetRole: selectedRole,
-                }),
+            const data = await api.post("/learning-path/generate", {
+                resumeId: resumeId,
+                targetRole: selectedRole,
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (data.success || data.pathId) {
+                if (data.pathId) localStorage.setItem("pathId", data.pathId);
                 router.push("/dashboard/profile");
             } else {
                 setError(data.message || "Failed to generate learning path.");
             }
         } catch (err) {
-            setError("Server connection error. Please try again.");
+            setError(err.message || "Server connection error. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -78,8 +72,8 @@ export default function SelectRolePage() {
                             key={role.id}
                             onClick={() => setSelectedRole(role.title)}
                             className={`group relative flex flex-col text-left p-6 rounded-2xl border-2 transition-all duration-300 ${selectedRole === role.title
-                                    ? "border-primary bg-surface shadow-[0_0_20px_rgba(124,108,255,0.2)]"
-                                    : "border-border bg-surface hover:border-border/80 hover:scale-[1.02]"
+                                ? "border-primary bg-surface shadow-[0_0_20px_rgba(124,108,255,0.2)]"
+                                : "border-border bg-surface hover:border-border/80 hover:scale-[1.02]"
                                 }`}
                         >
                             <span className="text-4xl mb-4 block" role="img" aria-label={role.title}>
@@ -113,8 +107,8 @@ export default function SelectRolePage() {
                         onClick={handleGeneratePath}
                         disabled={!selectedRole || loading}
                         className={`px-12 py-4 rounded-xl text-lg font-bold transition-all transform active:scale-95 ${!selectedRole || loading
-                                ? "bg-border text-textMuted cursor-not-allowed"
-                                : "bg-primary text-white hover:bg-primarySoft shadow-lg shadow-primary/25"
+                            ? "bg-border text-textMuted cursor-not-allowed"
+                            : "bg-primary text-white hover:bg-primarySoft shadow-lg shadow-primary/25"
                             }`}
                     >
                         {loading ? (

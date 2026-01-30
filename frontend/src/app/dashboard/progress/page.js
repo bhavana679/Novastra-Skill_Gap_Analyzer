@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { api } from "@/lib/api";
 import {
     BarChart,
     Bar,
@@ -46,8 +47,7 @@ export default function ProgressPage() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch("http://localhost:5001/api/resume/all");
-            const data = await response.json();
+            const data = await api.get("/resume/all");
 
             if (data.success && data.resumes.length > 0) {
                 const latest = data.resumes[0];
@@ -106,21 +106,17 @@ export default function ProgressPage() {
         formData.append("resume", file);
 
         try {
-            const response = await fetch("http://localhost:5001/api/resume/upload", {
-                method: "POST",
-                body: formData,
-            });
+            const data = await api.post("/resume/upload", formData);
 
-            if (response.ok) {
+            if (data.resumeId) {
                 setShowUpload(false);
                 setFile(null);
                 await fetchData();
             } else {
-                const data = await response.json();
                 setError(data.message || "Something went wrong during upload.");
             }
         } catch (err) {
-            setError("Failed to connect to the server.");
+            setError(err.message || "Failed to connect to the server.");
         } finally {
             setLoading(false);
         }
