@@ -2,15 +2,39 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 
 export default function LoginPage() {
+    const router = useRouter();
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
+        setLoading(true);
+
+        try {
+            const data = await api.post("/auth/login", {
+                email: formData.email,
+                password: formData.password,
+            });
+
+            if (data.success) {
+                localStorage.setItem("token", data.user.token);
+                localStorage.setItem("user", JSON.stringify(data.user));
+                router.push("/upload");
+            }
+        } catch (err) {
+            setError(err.message || "Invalid email or password");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -24,6 +48,12 @@ export default function LoginPage() {
                         Welcome back! Please enter your details
                     </p>
                 </div>
+
+                {error && (
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-3 rounded-lg text-sm text-center">
+                        {error}
+                    </div>
+                )}
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-4">
@@ -85,9 +115,10 @@ export default function LoginPage() {
                     <div>
                         <button
                             type="submit"
-                            className="group relative flex w-full justify-center rounded-lg bg-primary py-3 text-sm font-semibold text-white transition-all hover:bg-primarySoft focus:outline-none focus:ring-2 focus:ring-primarySoft/50"
+                            disabled={loading}
+                            className="group relative flex w-full justify-center rounded-lg bg-primary py-3 text-sm font-semibold text-white transition-all hover:bg-primarySoft focus:outline-none focus:ring-2 focus:ring-primarySoft/50 disabled:opacity-50"
                         >
-                            Sign In
+                            {loading ? "Signing In..." : "Sign In"}
                         </button>
                     </div>
 

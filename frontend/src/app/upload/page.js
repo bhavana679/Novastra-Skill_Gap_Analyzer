@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 
 export default function UploadPage() {
     const router = useRouter();
@@ -26,6 +27,12 @@ export default function UploadPage() {
     };
 
     const handleUpload = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            router.push("/login");
+            return;
+        }
+
         if (!file) {
             setError("Please select a file first.");
             return;
@@ -38,21 +45,16 @@ export default function UploadPage() {
         formData.append("resume", file);
 
         try {
-            const response = await fetch("http://localhost:5001/api/resume/upload", {
-                method: "POST",
-                body: formData,
-            });
+            const data = await api.post("/resume/upload", formData);
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (data.resumeId) {
                 localStorage.setItem("resumeId", data.resumeId);
                 router.push("/select-role");
             } else {
                 setError(data.message || "Something went wrong during upload.");
             }
         } catch (err) {
-            setError("Failed to connect to the server. Is the backend running?");
+            setError(err.message || "Failed to connect to the server. Is the backend running?");
         } finally {
             setLoading(false);
         }
@@ -72,8 +74,8 @@ export default function UploadPage() {
 
                 <div
                     className={`relative mt-8 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-10 transition-all ${isDragging
-                            ? "border-primary bg-primary/5 scale-[1.02]"
-                            : "border-border hover:border-primary/50"
+                        ? "border-primary bg-primary/5 scale-[1.02]"
+                        : "border-border hover:border-primary/50"
                         }`}
                     onDragOver={(e) => {
                         e.preventDefault();
@@ -131,8 +133,8 @@ export default function UploadPage() {
                     onClick={handleUpload}
                     disabled={loading || !file}
                     className={`flex w-full items-center justify-center rounded-xl bg-primary py-4 text-lg font-bold text-white shadow-lg transition-all active:scale-95 ${loading || !file
-                            ? "cursor-not-allowed opacity-50"
-                            : "hover:bg-primarySoft hover:shadow-primary/25"
+                        ? "cursor-not-allowed opacity-50"
+                        : "hover:bg-primarySoft hover:shadow-primary/25"
                         }`}
                 >
                     {loading ? (

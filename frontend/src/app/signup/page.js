@@ -2,16 +2,47 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 
 export default function SignupPage() {
+    const router = useRouter();
     const [formData, setFormData] = useState({
+        name: "",
         email: "",
         password: "",
         confirmPassword: "",
     });
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
+
+        if (formData.password !== formData.confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const data = await api.post("/auth/signup", {
+                name: formData.name,
+                email: formData.email,
+                password: formData.password,
+            });
+
+            if (data.success) {
+                localStorage.setItem("token", data.user.token);
+                localStorage.setItem("user", JSON.stringify(data.user));
+                router.push("/upload");
+            }
+        } catch (err) {
+            setError(err.message || "Something went wrong during signup");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -26,8 +57,32 @@ export default function SignupPage() {
                     </p>
                 </div>
 
+                {error && (
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-3 rounded-lg text-sm text-center">
+                        {error}
+                    </div>
+                )}
+
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-4">
+                        <div>
+                            <label className="text-sm font-medium text-textSecondary">
+                                Full Name
+                            </label>
+                            <div className="mt-1">
+                                <input
+                                    type="text"
+                                    required
+                                    className="block w-full rounded-lg border border-border bg-background px-4 py-3 text-textPrimary outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                    placeholder="John Doe"
+                                    value={formData.name}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, name: e.target.value })
+                                    }
+                                />
+                            </div>
+                        </div>
+
                         <div>
                             <label className="text-sm font-medium text-textSecondary">
                                 Email address
@@ -86,9 +141,10 @@ export default function SignupPage() {
                     <div>
                         <button
                             type="submit"
-                            className="group relative flex w-full justify-center rounded-lg bg-primary py-3 text-sm font-semibold text-white transition-all hover:bg-primarySoft focus:outline-none focus:ring-2 focus:ring-primarySoft/50"
+                            disabled={loading}
+                            className="group relative flex w-full justify-center rounded-lg bg-primary py-3 text-sm font-semibold text-white transition-all hover:bg-primarySoft focus:outline-none focus:ring-2 focus:ring-primarySoft/50 disabled:opacity-50"
                         >
-                            Sign Up
+                            {loading ? "Creating Account..." : "Sign Up"}
                         </button>
                     </div>
 

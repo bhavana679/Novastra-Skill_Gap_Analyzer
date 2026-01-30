@@ -19,8 +19,10 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="text-textSecondary hover:text-textPrimary transition-colors font-medium">Login</button>
-            <Link href="/upload" className="bg-primary hover:bg-primarySoft text-background font-bold px-6 py-2.5 rounded-full transition-all">
+            <Link href="/login" className="text-textSecondary hover:text-textPrimary transition-colors font-medium">
+              Login
+            </Link>
+            <Link href="/signup" className="bg-primary hover:bg-primarySoft text-background font-bold px-6 py-2.5 rounded-full transition-all">
               Get Started
             </Link>
           </div>
