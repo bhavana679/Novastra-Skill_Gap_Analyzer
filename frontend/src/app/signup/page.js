@@ -36,7 +36,7 @@ export default function SignupPage() {
             if (data.success) {
                 localStorage.setItem("token", data.user.token);
                 localStorage.setItem("user", JSON.stringify(data.user));
-                router.push("/upload");
+                router.push("/dashboard/profile");
             }
         } catch (err) {
             setError(err.message || "Something went wrong during signup");

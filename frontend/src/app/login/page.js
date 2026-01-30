@@ -28,7 +28,7 @@ export default function LoginPage() {
             if (data.success) {
                 localStorage.setItem("token", data.user.token);
                 localStorage.setItem("user", JSON.stringify(data.user));
-                router.push("/upload");
+                router.push("/dashboard/profile");
             }
         } catch (err) {
             setError(err.message || "Invalid email or password");
