@@ -15,7 +15,6 @@ export const updateProgress = async (resumeId, skill, status) => {
         throw new Error(`Invalid status: ${status}. Must be one of: ${validStatuses.join(', ')}`);
     }
 
-    // We use Mongoose's positional operator ($) to update the specific element in the steps array
     const updatedPath = await LearningPath.findOneAndUpdate(
         {
             resumeId: resumeId,
@@ -28,13 +27,38 @@ export const updateProgress = async (resumeId, skill, status) => {
             }
         },
         {
-            new: true // This option returns the updated document instead of the old one
+            new: true
         }
     );
 
     if (!updatedPath) {
         throw new Error('Learning path or specific skill not found for this resumeId.');
     }
+
+    const totalSteps = updatedPath.steps.length;
+    const completedSteps = updatedPath.steps.filter(s => s.status === 'COMPLETED').length;
+    const currentScore = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+
+    // Standardize date to comparison (YYYY-MM-DD)
+    const today = new Date().toISOString().split('T')[0];
+
+    // Find if we already have an entry for today
+    const historyIndex = updatedPath.scoreHistory.findIndex(h =>
+        new Date(h.date).toISOString().split('T')[0] === today
+    );
+
+    if (historyIndex !== -1) {
+        // Update today's entry
+        updatedPath.scoreHistory[historyIndex].score = currentScore;
+    } else {
+        // Add new entry for a new day
+        updatedPath.scoreHistory.push({
+            score: currentScore,
+            date: new Date()
+        });
+    }
+
+    await updatedPath.save();
 
     return updatedPath;
 };
