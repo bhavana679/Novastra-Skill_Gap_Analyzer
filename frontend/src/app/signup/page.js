@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 
-export default function SignupPage() {
+function SignupForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectPath = searchParams.get("redirect") || "/dashboard/profile";
+
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -36,7 +39,7 @@ export default function SignupPage() {
             if (data.success) {
                 localStorage.setItem("token", data.user.token);
                 localStorage.setItem("user", JSON.stringify(data.user));
-                router.push("/dashboard/profile");
+                router.push(redirectPath);
             }
         } catch (err) {
             setError(err.message || "Something went wrong during signup");
@@ -151,7 +154,7 @@ export default function SignupPage() {
                     <div className="text-center text-sm">
                         <span className="text-textMuted">Already have an account? </span>
                         <Link
-                            href="/login"
+                            href={redirectPath !== "/dashboard/profile" ? `/login?redirect=${redirectPath}` : "/login"}
                             className="font-medium text-primary hover:text-primarySoft transition-colors"
                         >
                             Log in
@@ -160,5 +163,17 @@ export default function SignupPage() {
                 </form>
             </div>
         </div>
+    );
+}
+
+export default function SignupPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex min-h-screen items-center justify-center bg-background">
+                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        }>
+            <SignupForm />
+        </Suspense>
     );
 }

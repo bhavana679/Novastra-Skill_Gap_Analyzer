@@ -10,7 +10,6 @@ export default function TestApiPage() {
     useEffect(() => {
         async function testApi() {
             try {
-                // Try to fetch a simple endpoint (even if it 404s, we check if the utility handles it)
                 const result = await api.get("/health");
                 setData(result);
                 setStatus("Success!");

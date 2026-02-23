@@ -13,10 +13,24 @@ const resumeSchema = new mongoose.Schema({
         type: [String],
         default: []
     },
+    projects: [
+        {
+            title: String,
+            description: String,
+            githubLink: String,
+            demoLink: String
+        }
+    ],
     education: {
         type: [String],
         default: []
     },
+    certifications: [
+        {
+            name: String,
+            link: String
+        }
+    ],
     experienceLevel: {
         type: String,
         default: 'Unknown'
@@ -37,6 +51,14 @@ const resumeSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    atsScore: {
+        type: Number,
+        default: 0
+    },
+    atsFeedback: {
+        type: [String],
+        default: []
     },
     createdAt: {
         type: Date,

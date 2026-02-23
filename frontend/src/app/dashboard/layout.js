@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     User,
     Map,
@@ -13,7 +13,8 @@ import {
     ChevronLeft,
     ChevronRight,
     Menu,
-    X
+    X,
+    MessageSquare
 } from "lucide-react";
 import { api } from "@/lib/api";
 
@@ -22,10 +23,24 @@ export default function DashboardLayout({ children }) {
     const router = useRouter();
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const [user, setUser] = useState({ name: 'User' });
 
-    // Get user from localStorage
-    const userString = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
-    const user = userString ? JSON.parse(userString) : { name: 'User' };
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token || token === "undefined" || token === "null") {
+            router.push(`/login?redirect=${pathname}`);
+            return;
+        }
+
+        const userString = localStorage.getItem('user');
+        if (userString) {
+            try {
+                setUser(JSON.parse(userString));
+            } catch (e) {
+                console.error("Failed to parse user from localStorage");
+            }
+        }
+    }, [router, pathname]);
 
     const navLinks = [
         { name: "Profile", href: "/dashboard/profile", icon: User },
@@ -33,6 +48,7 @@ export default function DashboardLayout({ children }) {
         { name: "Resources", href: "/dashboard/resources", icon: BookOpen },
         { name: "Progress", href: "/dashboard/progress", icon: BarChart3 },
         { name: "Comparison", href: "/dashboard/comparison", icon: ArrowLeftRight },
+        { name: "AI Assistant", href: "/dashboard/chat", icon: MessageSquare },
     ];
 
     const handleLogout = () => {
@@ -41,7 +57,6 @@ export default function DashboardLayout({ children }) {
 
     return (
         <div className="flex min-h-screen bg-background text-textPrimary">
-            {/* Mobile Toggle */}
             <button
                 onClick={() => setIsMobileOpen(!isMobileOpen)}
                 className="fixed top-4 left-4 z-50 p-2 bg-surface border border-border rounded-lg lg:hidden"
@@ -49,7 +64,6 @@ export default function DashboardLayout({ children }) {
                 {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
 
-            {/* Sidebar Overlay (Mobile) */}
             {isMobileOpen && (
                 <div
                     className="fixed inset-0 bg-black/50 z-40 lg:hidden"
@@ -57,8 +71,7 @@ export default function DashboardLayout({ children }) {
                 />
             )}
 
-            {/* Sidebar */}
-            <aside
+                <aside
                 className={`fixed left-0 top-0 h-screen bg-surface border-r border-border flex flex-col z-40 transition-all duration-300 ease-in-out ${isCollapsed ? "w-20" : "w-64"
                     } ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
             >
@@ -93,7 +106,7 @@ export default function DashboardLayout({ children }) {
                                 {!isCollapsed && <span className="font-medium whitespace-nowrap">{link.name}</span>}
 
                                 {isCollapsed && (
-                                    <div className="absolute left-full ml-4 px-2 py-1 bg-surface border border-border text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
+                                    <div className="absolute left-full ml-4 px-2 py-1 bg-surface border border-border text-textPrimary text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
                                         {link.name}
                                     </div>
                                 )}
@@ -117,7 +130,7 @@ export default function DashboardLayout({ children }) {
                     </div>
                     <button
                         onClick={handleLogout}
-                        className={`w-full mt-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors flex items-center justify-center ${isCollapsed ? "" : "space-x-2 px-4"
+                        className={`w-full mt-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center justify-center ${isCollapsed ? "" : "space-x-2 px-4"
                             }`}
                     >
                         <LogOut size={18} />
@@ -126,7 +139,6 @@ export default function DashboardLayout({ children }) {
                 </div>
             </aside>
 
-            {/* Main Content */}
             <main className={`flex-1 transition-all duration-300 min-h-screen relative ${isCollapsed ? "lg:ml-20" : "lg:ml-64"
                 }`}>
                 <div className="p-8 max-w-7xl mx-auto pt-16 lg:pt-8">

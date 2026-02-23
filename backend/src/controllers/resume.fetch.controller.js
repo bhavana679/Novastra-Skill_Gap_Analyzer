@@ -27,10 +27,16 @@ const getResumeById = async (req, res) => {
                 fileName: resume.fileName,
                 ocrText: resume.ocrText,
                 createdAt: resume.createdAt,
+                skills: resume.skills,
+                projects: resume.projects,
+                education: resume.education,
+                certifications: resume.certifications.map(c => typeof c === 'string' ? { name: c, link: '' } : c),
                 experienceLevel: resume.experienceLevel,
                 targetRole: resume.targetRole,
                 version: resume.version,
-                isActive: resume.isActive
+                isActive: resume.isActive,
+                atsScore: resume.atsScore,
+                atsFeedback: resume.atsFeedback
             }
         });
 
@@ -44,7 +50,13 @@ const getResumeById = async (req, res) => {
 
 const getResumes = async (req, res) => {
     try {
-        const resumes = await Resume.find().sort({ createdAt: -1 });
+        const { profileId } = req.query;
+        let query = {};
+        if (profileId) {
+            query.profileId = profileId;
+        }
+
+        const resumes = await Resume.find(query).sort({ createdAt: -1 });
         return res.status(200).json({
             success: true,
             resumes

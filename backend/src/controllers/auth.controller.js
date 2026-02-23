@@ -1,8 +1,9 @@
+import { config } from '../config/env.js';
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 
 const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET || 'secret', {
+    return jwt.sign({ id }, config.JWT_SECRET, {
         expiresIn: '30d'
     });
 };

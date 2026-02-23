@@ -1,9 +1,7 @@
 import mongoose from 'mongoose';
 
-// Connect to MongoDB
 const connectMongo = async () => {
     try {
-        // Get the connection string from environment variables
         const mongoValue = process.env.MONGO_URI;
 
         if (!mongoValue) {
@@ -11,13 +9,11 @@ const connectMongo = async () => {
             return;
         }
 
-        // Connect using Mongoose
         await mongoose.connect(mongoValue);
 
-        console.log('✅ Successfully connected to MongoDB');
+        console.log('Successfully connected to MongoDB');
     } catch (error) {
-        console.log('❌ Error connecting to MongoDB:', error.message);
-        // Exit if we can't connect, because the server needs the database
+        console.log('Error connecting to MongoDB:', error.message);
         process.exit(1);
     }
 };

@@ -1,11 +1,10 @@
-import LearningPath from '../models/LearningPath.js';
-import Resume from '../models/Resume.js';
-import generateLearningPath from '../services/learningPath.service.js';
 import mongoose from 'mongoose';
+import LearningPath from '../models/LearningPath.js';
+import { generateOrUpdatePath } from '../services/learningPathGenerator.service.js';
 
 export const createLearningPath = async (req, res) => {
     try {
-        const { resumeId, targetRole } = req.body;
+        const { resumeId, targetRole, experienceLevel, timeAvailability } = req.body;
 
         if (!resumeId || !targetRole) {
             return res.status(400).json({
@@ -21,28 +20,17 @@ export const createLearningPath = async (req, res) => {
             });
         }
 
-        const resume = await Resume.findById(resumeId);
-
-        if (!resume) {
-            return res.status(404).json({
-                success: false,
-                message: "Resume not found."
-            });
-        }
-
-        const steps = generateLearningPath(resume, targetRole);
-
-        const newLearningPath = new LearningPath({
+        // Use the centralized service
+        const savedPath = await generateOrUpdatePath({
             resumeId,
             targetRole,
-            steps
+            experienceLevel,
+            timeAvailability
         });
-
-        const savedPath = await newLearningPath.save();
 
         return res.status(201).json({
             success: true,
-            message: "Learning path generated successfully!",
+            message: "AI Learning path generated successfully!",
             data: savedPath
         });
 
@@ -50,8 +38,7 @@ export const createLearningPath = async (req, res) => {
         console.error("Error in createLearningPath controller:", error);
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error",
-            error: error.message
+            message: error.message || "Internal Server Error"
         });
     }
 };

@@ -45,6 +45,13 @@ const SKILL_DEPENDENCIES = {
         { skill: "Agile", level: "Intermediate" },
         { skill: "Scrum", level: "Intermediate" },
         { skill: "Portfolio Management", level: "Advanced" }
+    ],
+    "UI/UX Designer": [
+        { skill: "Design Principles", level: "Beginner" },
+        { skill: "Figma", level: "Intermediate" },
+        { skill: "User Research", level: "Intermediate" },
+        { skill: "Prototyping", level: "Intermediate" },
+        { skill: "Design Systems", level: "Advanced" }
     ]
 };
 

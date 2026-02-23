@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 
-export default function LoginPage() {
+function LoginForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectPath = searchParams.get("redirect") || "/dashboard/profile";
+
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -28,7 +31,7 @@ export default function LoginPage() {
             if (data.success) {
                 localStorage.setItem("token", data.user.token);
                 localStorage.setItem("user", JSON.stringify(data.user));
-                router.push("/dashboard/profile");
+                router.push(redirectPath);
             }
         } catch (err) {
             setError(err.message || "Invalid email or password");
@@ -123,9 +126,9 @@ export default function LoginPage() {
                     </div>
 
                     <div className="text-center text-sm">
-                        <span className="text-textMuted">Don't have an account? </span>
+                        <span className="text-textMuted">Don&apos;t have an account? </span>
                         <Link
-                            href="/signup"
+                            href={redirectPath !== "/dashboard/profile" ? `/signup?redirect=${redirectPath}` : "/signup"}
                             className="font-medium text-primary hover:text-primarySoft transition-colors"
                         >
                             Sign up
@@ -134,5 +137,17 @@ export default function LoginPage() {
                 </form>
             </div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex min-h-screen items-center justify-center bg-background">
+                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        }>
+            <LoginForm />
+        </Suspense>
     );
 }

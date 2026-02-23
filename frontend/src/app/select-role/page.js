@@ -16,14 +16,22 @@ const roles = [
 export default function SelectRolePage() {
     const router = useRouter();
     const [selectedRole, setSelectedRole] = useState(null);
+    const [experienceLevel, setExperienceLevel] = useState("Beginner");
+    const [timeAvailability, setTimeAvailability] = useState("10"); // Hours per week
     const [resumeId, setResumeId] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token || token === "undefined" || token === "null") {
+            router.replace("/login?redirect=/select-role");
+            return;
+        }
+
         const storedId = localStorage.getItem("resumeId");
         if (!storedId) {
-            router.push("/upload");
+            router.replace("/upload");
         } else {
             setResumeId(storedId);
         }
@@ -39,10 +47,13 @@ export default function SelectRolePage() {
             const data = await api.post("/learning-path/generate", {
                 resumeId: resumeId,
                 targetRole: selectedRole,
+                experienceLevel: experienceLevel,
+                timeAvailability: timeAvailability
             });
 
-            if (data.success || data.pathId) {
-                if (data.pathId) localStorage.setItem("pathId", data.pathId);
+            if (data.success || data.data) {
+                const pathId = data.data?._id || data.pathId;
+                if (pathId) localStorage.setItem("pathId", pathId);
                 router.push("/dashboard/profile");
             } else {
                 setError(data.message || "Failed to generate learning path.");
@@ -62,7 +73,7 @@ export default function SelectRolePage() {
                         Choose Your <span className="text-primary">Target Role</span>
                     </h1>
                     <p className="text-textSecondary text-lg max-w-2xl mx-auto">
-                        Select the role you're aiming for. We'll analyze your resume against this role to find skill gaps and build your roadmap.
+                        Select the role you&apos;re aiming for. We&apos;ll analyze your resume against this role to find skill gaps and build your roadmap.
                     </p>
                 </div>
 
@@ -94,6 +105,44 @@ export default function SelectRolePage() {
                             )}
                         </button>
                     ))}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-surface p-8 rounded-3xl border border-border shadow-xl">
+                    <div className="space-y-4">
+                        <label className="text-lg font-bold text-textPrimary flex items-center gap-2">
+                            <span>Experience Level</span>
+                        </label>
+                        <div className="grid grid-cols-3 gap-3">
+                            {["Beginner", "Intermediate", "Advanced"].map((level) => (
+                                <button
+                                    key={level}
+                                    onClick={() => setExperienceLevel(level)}
+                                    className={`py-3 rounded-xl font-bold text-sm transition-all border ${experienceLevel === level
+                                        ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
+                                        : "bg-background text-textSecondary border-border hover:border-primary/50"
+                                        }`}
+                                >
+                                    {level}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <label className="text-lg font-bold text-textPrimary flex items-center gap-2">
+                            <span>Weekly Commitment</span>
+                        </label>
+                        <select
+                            value={timeAvailability}
+                            onChange={(e) => setTimeAvailability(e.target.value)}
+                            className="w-full bg-background border border-border rounded-xl px-4 py-3 text-textPrimary font-bold focus:outline-none focus:border-primary transition-colors"
+                        >
+                            <option value="5">5 hours / week</option>
+                            <option value="10">10 hours / week</option>
+                            <option value="20">20 hours / week</option>
+                            <option value="40">40 hours / week (Full-time)</option>
+                        </select>
+                    </div>
                 </div>
 
                 {error && (

@@ -1,6 +1,27 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token && token !== "undefined" && token !== "null");
+  }, []);
+
+  const handleUploadClick = (e) => {
+    e.preventDefault();
+    if (isLoggedIn) {
+      router.push("/upload");
+    } else {
+      router.push("/login?redirect=/upload");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-textPrimary selection:bg-primary selection:text-background">
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -42,10 +63,13 @@ export default function Home() {
               Upload your resume and let Novastra analyze your skills against industry standards. Get a personalized learning path to land your next role.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link href="/upload" className="w-full sm:w-auto bg-primary hover:bg-primarySoft text-background text-lg font-bold px-10 py-4 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2">
+              <button
+                onClick={handleUploadClick}
+                className="w-full sm:w-auto bg-primary hover:bg-primarySoft text-background text-lg font-bold px-10 py-4 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
                 Upload Resume
-              </Link>
+              </button>
               <button className="w-full sm:w-auto border border-border hover:border-primary px-10 py-4 rounded-full font-bold transition-all">
                 View Demo
               </button>
@@ -85,12 +109,13 @@ export default function Home() {
               <p className="text-textSecondary">Tools designed to give you a competitive edge.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Features grid */}
               {[
                 { title: "Advanced OCR", desc: "Extract text from any resume format with pinpoint accuracy using neural networks." },
                 { title: "Skill Versioning", desc: "Track your growth over time as you complete courses and update your profile." },
                 { title: "Market Insights", desc: "Real-time data on which skills are trending and which ones are becoming obsolete." }
               ].map((feature, i) => (
-                <div key={i} className="p-10 rounded-3xl bg-surface border border-border hover:shadow-[0_0_30px_rgba(124,108,255,0.15)] transition-all">
+                <div key={i} className="p-10 rounded-3xl bg-surface border border-border hover:shadow-[0_0_30px_rgba(37,99,235,0.15)] transition-all">
                   <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
                   <p className="text-textSecondary leading-relaxed text-lg">{feature.desc}</p>
                 </div>
@@ -107,9 +132,12 @@ export default function Home() {
               <p className="text-xl font-medium opacity-90 max-w-xl mx-auto">
                 Join thousands of professionals using Novastra to navigate their career paths.
               </p>
-              <Link href="/upload" className="inline-block bg-background text-primary text-lg font-black px-12 py-5 rounded-full hover:shadow-2xl transition-all transform hover:scale-105">
+              <button
+                onClick={handleUploadClick}
+                className="inline-block bg-background text-primary text-lg font-black px-12 py-5 rounded-full hover:shadow-2xl transition-all transform hover:scale-105"
+              >
                 Analyze My Resume Now
-              </Link>
+              </button>
             </div>
           </div>
         </section>
@@ -117,9 +145,9 @@ export default function Home() {
 
       <footer className="py-12 px-6 border-t border-border">
         <div className="max-w-7xl mx-auto flex flex-col md:row items-center justify-between gap-8">
-          <div className="flex items-center gap-2 grayscale brightness-200">
-            <div className="w-6 h-6 bg-white rounded flex items-center justify-center">
-              <span className="font-bold text-black text-sm">N</span>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <span className="font-bold text-white text-sm">N</span>
             </div>
             <span className="text-xl font-bold">Novastra</span>
           </div>

@@ -49,16 +49,28 @@ export const refineLearningPath = async (req, res) => {
             baseLearningPath: baseLearningPath.steps
         });
 
-        const refinedSteps = await refineLearningPathWithAI(prompt);
+        const refinedSteps = await refineLearningPathWithAI(prompt, baseLearningPath.targetRole);
+
+        // Update the database with refined steps
+        baseLearningPath.steps = refinedSteps;
+        baseLearningPath.updatedAt = new Date();
+
+        // Calculate new score for history
+        const completedCount = refinedSteps.filter(s => s.status === 'COMPLETED').length;
+        const totalCount = refinedSteps.length;
+        const newScore = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+        baseLearningPath.scoreHistory.push({
+            score: newScore,
+            date: new Date()
+        });
+
+        const savedPath = await baseLearningPath.save();
 
         return res.status(200).json({
             success: true,
             message: "Learning path refined successfully using AI!",
-            data: {
-                resumeId,
-                targetRole: baseLearningPath.targetRole,
-                refinedSteps
-            }
+            data: savedPath
         });
 
     } catch (error) {

@@ -1,15 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { api } from "@/lib/api";
 
 export default function UploadPage() {
     const router = useRouter();
     const [file, setFile] = useState(null);
+    const [uploadStage, setUploadStage] = useState(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [isDragging, setIsDragging] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token || token === "undefined" || token === "null") {
+            router.push("/login?redirect=/upload");
+        }
+    }, [router]);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -28,8 +37,8 @@ export default function UploadPage() {
 
     const handleUpload = async () => {
         const token = localStorage.getItem("token");
-        if (!token) {
-            router.push("/login");
+        if (!token || token === "undefined" || token === "null") {
+            router.push("/login?redirect=/upload");
             return;
         }
 
@@ -40,34 +49,75 @@ export default function UploadPage() {
 
         setLoading(true);
         setError("");
+        setUploadStage(1);
 
+        const userData = JSON.parse(localStorage.getItem("user") || "{}");
         const formData = new FormData();
         formData.append("resume", file);
+        if (userData.id) {
+            formData.append("profileId", userData.id);
+        }
 
         try {
+            // Stage 2: Parsing
+            setTimeout(() => setUploadStage(2), 2000);
+
             const data = await api.post("/resume/upload", formData);
 
-            if (data.resumeId) {
-                localStorage.setItem("resumeId", data.resumeId);
-                router.push("/select-role");
-            } else {
-                setError(data.message || "Something went wrong during upload.");
-            }
+            // Stage 3: Extracting Skills
+            setUploadStage(3);
+            setTimeout(async () => {
+                if (data.resumeId) {
+                    localStorage.setItem("resumeId", data.resumeId);
+                    router.push("/select-role");
+                } else {
+                    setError(data.message || "Something went wrong during upload.");
+                    setLoading(false);
+                }
+            }, 1500);
+
         } catch (err) {
             setError(err.message || "Failed to connect to the server. Is the backend running?");
-        } finally {
             setLoading(false);
         }
     };
 
+    const stages = [
+        { id: 1, label: "Uploading Resume", icon: "📤" },
+        { id: 2, label: "AI Parsing Text", icon: "🧠" },
+        { id: 3, label: "Extracting Skills & Experience", icon: "✨" }
+    ];
+
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12">
-            <div className="w-full max-w-xl space-y-8 rounded-3xl border border-border bg-surface p-8 shadow-2xl transition-all md:p-12">
+            <div className="w-full max-w-xl space-y-8 rounded-[3rem] border border-border bg-surface p-8 shadow-2xl transition-all md:p-12 relative overflow-hidden">
+                <button
+                    onClick={() => router.back()}
+                    className="flex items-center gap-2 text-textSecondary hover:text-primary transition-colors font-bold text-sm mb-4 group"
+                >
+                    <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                    Back
+                </button>
+                {loading && (
+                    <div className="absolute inset-0 bg-surface/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-12 text-center animate-in fade-in duration-300">
+                        <div className="w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin mb-8"></div>
+                        <div className="space-y-6 w-full">
+                            {stages.map((stage) => (
+                                <div key={stage.id} className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-500 ${uploadStage === stage.id ? 'bg-primary/10 border-primary scale-105 shadow-xl' : uploadStage > stage.id ? 'bg-green-500/10 border-green-500/30 opacity-60' : 'bg-background/20 border-border/20 opacity-30'}`}>
+                                    <span className="text-2xl">{stage.id <= uploadStage - 1 ? "✅" : stage.icon}</span>
+                                    <span className={`font-bold ${uploadStage === stage.id ? 'text-primary' : 'text-textSecondary'}`}>{stage.label}</span>
+                                    {uploadStage === stage.id && <div className="ml-auto w-2 h-2 bg-primary rounded-full animate-ping"></div>}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 <div className="text-center">
-                    <h1 className="text-3xl font-bold tracking-tight text-textPrimary">
-                        AI Resume Analyzer
+                    <h1 className="text-4xl font-black tracking-tight text-textPrimary">
+                        Analyze <span className="text-primary">Resume</span>
                     </h1>
-                    <p className="mt-2 text-textSecondary">
+                    <p className="mt-4 text-textSecondary text-lg font-medium">
                         Upload your resume to identify skill gaps and get a personalized roadmap
                     </p>
                 </div>

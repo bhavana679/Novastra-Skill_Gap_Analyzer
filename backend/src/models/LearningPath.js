@@ -10,6 +10,22 @@ const learningPathSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    experienceLevel: {
+        type: String,
+        default: 'Beginner'
+    },
+    timeAvailability: {
+        type: String,
+        default: '10'
+    },
+    insight: {
+        type: String,
+        default: "Your learning path is optimized for career growth. Every skill you master brings you closer to your goal."
+    },
+    growthFactor: {
+        type: String,
+        default: "High"
+    },
     steps: [
         {
             skill: {
@@ -30,10 +46,30 @@ const learningPathSchema = new mongoose.Schema({
                 enum: ['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED'],
                 default: 'NOT_STARTED'
             },
+            estimatedTime: {
+                type: String,
+                default: "1 week"
+            },
+            reason: {
+                type: String,
+                default: "Essential for this role."
+            },
+            microTopics: [String],
+            resources: [{
+                title: String,
+                type: { type: String },
+                url: String
+            }],
             updatedAt: {
                 type: Date,
                 default: null
             }
+        }
+    ],
+    scoreHistory: [
+        {
+            score: Number,
+            date: { type: Date, default: Date.now }
         }
     ],
     createdAt: {

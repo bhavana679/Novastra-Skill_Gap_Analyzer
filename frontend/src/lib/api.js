@@ -20,6 +20,14 @@ async function request(endpoint, options = {}) {
     });
 
     if (!response.ok) {
+        if (response.status === 401 && typeof window !== 'undefined') {
+            console.warn("Session expired or unauthorized. Logging out...");
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('resumeId');
+            localStorage.removeItem('pathId');
+            window.location.href = '/login?expired=true';
+        }
         const error = await response.json().catch(() => ({}));
         throw new Error(error.message || "Request failed");
     }
@@ -49,6 +57,8 @@ export const api = {
         if (typeof window !== 'undefined') {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
+            localStorage.removeItem('resumeId');
+            localStorage.removeItem('pathId');
             window.location.href = '/login';
         }
     }
