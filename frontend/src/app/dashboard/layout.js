@@ -71,7 +71,7 @@ export default function DashboardLayout({ children }) {
                 />
             )}
 
-                <aside
+            <aside
                 className={`fixed left-0 top-0 h-screen bg-surface border-r border-border flex flex-col z-40 transition-all duration-300 ease-in-out ${isCollapsed ? "w-20" : "w-64"
                     } ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
             >
