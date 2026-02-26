@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Upload, Search, Zap, CheckCircle2 } from "lucide-react";
 import { api } from "@/lib/api";
 
 export default function UploadPage() {
@@ -83,9 +83,9 @@ export default function UploadPage() {
     };
 
     const stages = [
-        { id: 1, label: "Uploading Resume", icon: "📤" },
-        { id: 2, label: "AI Parsing Text", icon: "🧠" },
-        { id: 3, label: "Extracting Skills & Experience", icon: "✨" }
+        { id: 1, label: "Uploading Resume", icon: Upload },
+        { id: 2, label: "AI Parsing Text", icon: Search },
+        { id: 3, label: "Extracting Skills & Experience", icon: Zap }
     ];
 
     return (
@@ -103,8 +103,10 @@ export default function UploadPage() {
                         <div className="w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin mb-8"></div>
                         <div className="space-y-6 w-full">
                             {stages.map((stage) => (
-                                <div key={stage.id} className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-500 ${uploadStage === stage.id ? 'bg-primary/10 border-primary scale-105 shadow-xl' : uploadStage > stage.id ? 'bg-green-500/10 border-green-500/30 opacity-60' : 'bg-background/20 border-border/20 opacity-30'}`}>
-                                    <span className="text-2xl">{stage.id <= uploadStage - 1 ? "✅" : stage.icon}</span>
+                                <div key={stage.id} className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-500 w-full ${uploadStage === stage.id ? 'bg-primary/10 border-primary scale-105 shadow-xl' : uploadStage > stage.id ? 'bg-green-500/10 border-green-500/30 opacity-60' : 'bg-background/20 border-border/20 opacity-30'}`}>
+                                    <div className={`p-2 rounded-lg ${uploadStage === stage.id ? 'bg-primary/20 text-primary' : uploadStage > stage.id ? 'bg-green-500/20 text-green-500' : 'bg-textMuted/10 text-textMuted'}`}>
+                                        {uploadStage > stage.id ? <CheckCircle2 size={20} /> : stage.icon && <stage.icon size={20} />}
+                                    </div>
                                     <span className={`font-bold ${uploadStage === stage.id ? 'text-primary' : 'text-textSecondary'}`}>{stage.label}</span>
                                     {uploadStage === stage.id && <div className="ml-auto w-2 h-2 bg-primary rounded-full animate-ping"></div>}
                                 </div>

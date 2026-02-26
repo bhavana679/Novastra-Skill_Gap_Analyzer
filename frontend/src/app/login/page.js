@@ -97,23 +97,7 @@ function LoginForm() {
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            <input
-                                id="remember-me"
-                                type="checkbox"
-                                className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
-                            />
-                            <label className="ml-2 block text-sm text-textSecondary">
-                                Remember me
-                            </label>
-                        </div>
-                        <div className="text-sm">
-                            <a href="#" className="font-medium text-primary hover:text-primarySoft">
-                                Forgot password?
-                            </a>
-                        </div>
-                    </div>
+                    {/* Removed Remember Me and Forgot Password options per request */}
 
                     <div>
                         <button

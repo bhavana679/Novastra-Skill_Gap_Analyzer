@@ -2,15 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import {
+    Layout,
+    Server,
+    Layers,
+    Cloud,
+    BarChart3,
+    Figma
+} from "lucide-react";
 import { api } from "@/lib/api";
 
 const roles = [
-    { id: "frontend", title: "Frontend Developer", description: "Build stunning user interfaces with React, Next.js, and Tailwind.", icon: "🎨" },
-    { id: "backend", title: "Backend Developer", description: "Design robust APIs, databases, and scalable server architectures.", icon: "⚙️" },
-    { id: "fullstack", title: "Full Stack Developer", description: "Master both ends by integrating frontend and backend seamlessly.", icon: "💻" },
-    { id: "devops", title: "DevOps Engineer", description: "Optimize deployment pipelines and manage cloud infrastructure.", icon: "🚀" },
-    { id: "data-scientist", title: "Data Scientist", description: "Unlock insights from data using ML and statistical analysis.", icon: "📊" },
-    { id: "ui-ux", title: "UI/UX Designer", description: "Create intuitive user experiences and high-fidelity designs.", icon: "✨" },
+    { id: "frontend", title: "Frontend Developer", description: "Build stunning user interfaces with React, Next.js, and Tailwind.", icon: Layout },
+    { id: "backend", title: "Backend Developer", description: "Design robust APIs, databases, and scalable server architectures.", icon: Server },
+    { id: "fullstack", title: "Full Stack Developer", description: "Master both ends by integrating frontend and backend seamlessly.", icon: Layers },
+    { id: "devops", title: "DevOps Engineer", description: "Optimize deployment pipelines and manage cloud infrastructure.", icon: Cloud },
+    { id: "data-scientist", title: "Data Scientist", description: "Unlock insights from data using ML and statistical analysis.", icon: BarChart3 },
+    { id: "ui-ux", title: "UI/UX Designer", description: "Create intuitive user experiences and high-fidelity designs.", icon: Figma },
 ];
 
 export default function SelectRolePage() {
@@ -87,9 +95,9 @@ export default function SelectRolePage() {
                                 : "border-border bg-surface hover:border-border/80 hover:scale-[1.02]"
                                 }`}
                         >
-                            <span className="text-4xl mb-4 block" role="img" aria-label={role.title}>
-                                {role.icon}
-                            </span>
+                            <div className={`mb-4 p-3 rounded-xl w-fit ${selectedRole === role.title ? "bg-primary/20 text-primary" : "bg-primary/10 text-primary"}`}>
+                                {role.icon && <role.icon size={28} />}
+                            </div>
                             <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
                                 {role.title}
                             </h3>

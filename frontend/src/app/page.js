@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Twitter, Github, Linkedin } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
@@ -36,7 +37,6 @@ export default function Home() {
           <div className="hidden md:flex items-center gap-8 text-textSecondary font-medium">
             <a href="#features" className="hover:text-primary transition-colors">Features</a>
             <a href="#how-it-works" className="hover:text-primary transition-colors">How It Works</a>
-            <a href="#pricing" className="hover:text-primary transition-colors">Pricing</a>
           </div>
 
           <div className="flex items-center gap-4">
@@ -69,9 +69,6 @@ export default function Home() {
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
                 Upload Resume
-              </button>
-              <button className="w-full sm:w-auto border border-border hover:border-primary px-10 py-4 rounded-full font-bold transition-all">
-                View Demo
               </button>
             </div>
           </div>
@@ -153,9 +150,9 @@ export default function Home() {
           </div>
           <p className="text-textMuted text-sm">© 2026 Novastra AI. All rights reserved.</p>
           <div className="flex gap-6 text-textMuted">
-            <a href="#" className="hover:text-primary">Twitter</a>
-            <a href="#" className="hover:text-primary">GitHub</a>
-            <a href="#" className="hover:text-primary">LinkedIn</a>
+            <a href="#" className="hover:text-primary transition-colors"><Twitter size={20} /></a>
+            <a href="#" className="hover:text-primary transition-colors"><Github size={20} /></a>
+            <a href="#" className="hover:text-primary transition-colors"><Linkedin size={20} /></a>
           </div>
         </div>
       </footer>

@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Novastra Frontend
 
-## Getting Started
+This is the client-side application for **Novastra**, built with Next.js. It provides a sleek, interactive dashboard for career analysis and learning path management.
 
-First, run the development server:
+## Quick Start
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Configure environment**:
+   Create a `.env.local` file:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:5000/api
+   ```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+3. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Visit [http://localhost:3000](http://localhost:3000) to view the application.
 
-## Learn More
+## Key Packages
 
-To learn more about Next.js, take a look at the following resources:
+- **Next.js**: Core framework for routing and SSR.
+- **Tailwind CSS**: Modern UI styling with custom design tokens.
+- **Recharts**: Interactive charts for skill gap visualization.
+- **Lucide React**: Clean and consistent iconography.
+- **React Markdown**: Used for rendering AI-generated insights and learning paths.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Architecture
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `src/app/`: Contains the main page layouts and routes.
+  - `dashboard/`: The core user interface with sub-pages for chat, progress, and resources.
+  - `upload/`: Resume upload and processing interface.
+  - `select-role/`: Role selection for targeted gap analysis.
+- `src/components/`: Reusable UI components like charts, sidebars, and custom markdown renderers.
 
-## Deploy on Vercel
+## Design System
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The project uses a custom design system defined in `globals.css` and `tailwind.config.mjs`, featuring:
+- High-contrast typography for readability.
+- Subtle glassmorphism effects for a modern feel.
+- Dynamic hover states and transitions for better user engagement.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*For full project documentation, including the backend setup, please refer to the [Root README](../README.md).*
+
